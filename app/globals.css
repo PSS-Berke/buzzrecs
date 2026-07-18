@@ -496,38 +496,183 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   50% { transform: translateY(-6px) rotate(2deg); }
 }
 
-/* review cards */
-.review-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 24px;
-  padding: 28px 0 30px;
+/* review carousel — social-feed-style scrollable reviews */
+.rc-wrap { position: relative; margin: 10px 0 34px; }
+
+.rc-hint {
+  font-family: var(--font-script), cursive;
+  font-size: 0.95rem;
+  color: var(--club-light);
+  margin: 0 0 10px 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transform: rotate(-1deg);
+  transition: opacity 0.3s ease;
 }
-.review {
+.rc-club .rc-hint { color: var(--brass); }
+.rc-hint span { display: inline-block; animation: rcNudge 1.3s ease-in-out infinite; }
+.rc-hint-hidden { opacity: 0; }
+@keyframes rcNudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.rc-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 16px;
+  scrollbar-width: none;
+  margin: 0 -4px;
+}
+.rc-track::-webkit-scrollbar { display: none; }
+
+.rc-card {
+  flex: 0 0 auto;
+  width: min(78vw, 300px);
+  scroll-snap-align: start;
   background: var(--paper);
   border: 2px solid var(--maroon);
   border-radius: 20px 14px 22px 16px;
-  padding: 22px;
   box-shadow: 4px 4px 0 rgba(176, 138, 62, 0.35);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  transition: transform 0.18s ease;
 }
-.review .whiskey {
+.rc-club .rc-card {
+  border-color: var(--club);
+  box-shadow: 4px 4px 0 rgba(176, 138, 62, 0.3);
+}
+
+.rc-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(160deg, var(--maroon), var(--maroon-deep));
+}
+.rc-club .rc-media { background: linear-gradient(160deg, var(--club), #24352b); }
+.rc-media video,
+.rc-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.rc-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+}
+.rc-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 46%;
+  background: linear-gradient(to top, rgba(43, 32, 28, 0.6), transparent);
+  pointer-events: none;
+}
+.rc-rating {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--paper);
+  border: 2px solid var(--brass);
+  border-radius: var(--wobble);
+  padding: 3px 11px 4px;
   font-family: var(--font-display), Georgia, serif;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
+  color: var(--maroon);
+  box-shadow: 2px 2px 0 rgba(63, 90, 73, 0.3);
+}
+.rc-rating strong { font-size: 1.15rem; }
+
+.rc-body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 5px; }
+.rc-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 1.1rem;
+  line-height: 1.22;
   color: var(--maroon);
 }
-.review .at { font-family: var(--font-script), cursive; color: var(--club-light); font-size: 1.05rem; }
-.review video { width: 100%; border-radius: 12px; border: 2px solid var(--maroon); background: #000; }
-.rating-row { display: flex; align-items: center; gap: 10px; }
-.rating-num {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 1.6rem;
-  color: var(--brass);
-  text-shadow: 1px 1px 0 var(--maroon);
+.rc-subtitle {
+  font-family: var(--font-script), cursive;
+  color: var(--club-light);
+  font-size: 1rem;
 }
-.rating-outof { font-size: 0.8rem; color: #7a6552; font-weight: 700; }
+.rc-byline {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--brass);
+}
+.rc-sub-ratings {
+  font-size: 0.8rem;
+  color: #7a6552;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.rc-sub-dot { opacity: 0.5; }
+.rc-notes {
+  font-size: 0.87rem;
+  color: #4a382e;
+  margin-top: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rc-dots { display: flex; justify-content: center; gap: 7px; margin-top: 2px; }
+.rc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--maroon);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.rc-club .rc-dot { border-color: var(--club); }
+.rc-dot.on { background: var(--brass); border-color: var(--brass); transform: scale(1.15); }
+.rc-club .rc-dot.on { background: var(--club); border-color: var(--club); }
+
+.rc-arrow { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .rc-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: calc(39% - 19px);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--maroon);
+    background: var(--paper);
+    color: var(--maroon);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(125, 52, 68, 0.3);
+    z-index: 3;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .rc-club .rc-arrow { border-color: var(--club); }
+  .rc-arrow:hover { background: var(--maroon); color: var(--paper); transform: scale(1.08); }
+  .rc-club .rc-arrow:hover { background: var(--club); }
+  .rc-arrow-prev { left: -10px; }
+  .rc-arrow-next { right: -10px; }
+}
+
 .gabby-empty {
   border: 2px dashed var(--club-light);
   border-radius: 24px;
@@ -612,6 +757,15 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   .hero { padding: 40px 0 8px; }
   .card { padding: 20px; }
   .carousel { aspect-ratio: 16 / 10; }
+
+  .gabby-hero { padding: 28px 0 14px; gap: 18px; }
+  .gabby-hero h1 { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .gabby-hero .script-sub { font-size: 1.25rem; }
+  .glass-scene { flex-basis: 170px; width: 170px; height: 170px; margin: 4px auto 0; }
+  .gabby-actions { gap: 12px; }
+
+  .rc-arrow { display: none !important; }
+  .rc-card { width: 82vw; }
 }
 
 /* ================= Map page ================= */

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getGabbysReviews, getUserReviews } from "../../lib/supabase";
 import WhiskeyGlass from "../whiskey-glass";
+import ReviewCarousel from "../review-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,36 @@ export default async function GabbysCorner() {
     getGabbysReviews(),
     getUserReviews(),
   ]);
+
+  const gabbyItems = (reviews || []).map((r) => ({
+    id: r.id,
+    title: r.places?.name ?? r.bar_text ?? r.whiskey_name,
+    subtitle: [r.whiskey_name, r.places?.neighborhood].filter(Boolean).join(" · "),
+    byline: "Gabby's call",
+    mediaType: r.video_url ? "video" : r.menu_photo_url ? "image" : null,
+    mediaUrl: r.video_url || r.menu_photo_url || null,
+    rating: Number(r.rating),
+    ratingOutOf: 10,
+    vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,
+    menu: r.rating_menu != null ? Number(r.rating_menu) : null,
+    notes: r.notes,
+  }));
+
+  const communityItems = (communityReviews || []).map((r) => ({
+    id: r.id,
+    title: r.whiskey_name,
+    subtitle: [r.places?.name ?? r.bar_text ?? "somewhere in Chicago", r.places?.neighborhood]
+      .filter(Boolean)
+      .join(" · "),
+    byline: r.profiles?.display_name || "Anonymous",
+    mediaType: r.menu_photo_url ? "image" : null,
+    mediaUrl: r.menu_photo_url || null,
+    rating: Number(r.rating),
+    ratingOutOf: 5,
+    vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,
+    menu: r.rating_menu != null ? Number(r.rating_menu) : null,
+    notes: r.body,
+  }));
 
   return (
     <>
@@ -65,48 +96,8 @@ export default async function GabbysCorner() {
           </div>
         )}
 
-        {reviews && reviews.length > 0 && (
-          <div className="review-grid">
-            {reviews.map((r) => (
-              <article className="review" key={r.id}>
-                <div className="whiskey">
-                  {r.places?.name ?? r.bar_text ?? r.whiskey_name}
-                </div>
-                {(r.whiskey_name || r.places?.neighborhood) && (
-                  <div className="at">
-                    {r.whiskey_name
-                      ? `${r.whiskey_name}`
-                      : ""}
-                    {r.whiskey_name && r.places?.neighborhood ? " · " : ""}
-                    {r.places?.neighborhood ?? ""}
-                  </div>
-                )}
-                {r.video_url && (
-                  <video controls preload="metadata" src={r.video_url} />
-                )}
-                {r.menu_photo_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={r.menu_photo_url}
-                    alt="The menu"
-                    style={{ width: "100%", borderRadius: 10 }}
-                  />
-                )}
-                <div className="rating-row">
-                  <span className="rating-num">{Number(r.rating)}</span>
-                  <span className="rating-outof">/ 10 — Gabby&apos;s call</span>
-                </div>
-                {(r.rating_vibe != null || r.rating_menu != null) && (
-                  <div className="at">
-                    {r.rating_vibe != null && `vibe ${Number(r.rating_vibe)}/10`}
-                    {r.rating_vibe != null && r.rating_menu != null && " · "}
-                    {r.rating_menu != null && `menu ${Number(r.rating_menu)}/10`}
-                  </div>
-                )}
-                {r.notes && <p className="desc">{r.notes}</p>}
-              </article>
-            ))}
-          </div>
+        {gabbyItems.length > 0 && (
+          <ReviewCarousel items={gabbyItems} tone="maroon" />
         )}
 
         <section className="gabby-hero" style={{ marginTop: "3rem" }}>
@@ -132,40 +123,8 @@ export default async function GabbysCorner() {
           </div>
         )}
 
-        {communityReviews && communityReviews.length > 0 && (
-          <div className="review-grid">
-            {communityReviews.map((r) => (
-              <article className="review" key={r.id}>
-                <div className="whiskey">{r.whiskey_name}</div>
-                <div className="at">
-                  {r.places?.name ?? r.bar_text ?? "somewhere in Chicago"}
-                  {r.places?.neighborhood ? ` · ${r.places.neighborhood}` : ""}
-                </div>
-                {r.menu_photo_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={r.menu_photo_url}
-                    alt="The menu"
-                    style={{ width: "100%", borderRadius: 10 }}
-                  />
-                )}
-                <div className="rating-row">
-                  <span className="rating-num">{Number(r.rating)}</span>
-                  <span className="rating-outof">
-                    / 5 — {r.profiles?.display_name || "Anonymous"}
-                  </span>
-                </div>
-                {(r.rating_vibe != null || r.rating_menu != null) && (
-                  <div className="at">
-                    {r.rating_vibe != null && `vibe ${Number(r.rating_vibe)}/5`}
-                    {r.rating_vibe != null && r.rating_menu != null && " · "}
-                    {r.rating_menu != null && `menu ${Number(r.rating_menu)}/5`}
-                  </div>
-                )}
-                {r.body && <p className="desc">{r.body}</p>}
-              </article>
-            ))}
-          </div>
+        {communityItems.length > 0 && (
+          <ReviewCarousel items={communityItems} tone="club" />
         )}
 
         <footer className="site">
