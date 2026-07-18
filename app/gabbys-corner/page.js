@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getGabbysReviews } from "../../lib/supabase";
+import { getGabbysReviews, getUserReviews } from "../../lib/supabase";
 import WhiskeyGlass from "../whiskey-glass";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,10 @@ export const metadata = {
 };
 
 export default async function GabbysCorner() {
-  const reviews = await getGabbysReviews();
+  const [reviews, communityReviews] = await Promise.all([
+    getGabbysReviews(),
+    getUserReviews(),
+  ]);
 
   return (
     <>
@@ -86,6 +89,50 @@ export default async function GabbysCorner() {
                   <span className="rating-outof">/ 10 — Gabby&apos;s call</span>
                 </div>
                 {r.notes && <p className="desc">{r.notes}</p>}
+              </article>
+            ))}
+          </div>
+        )}
+
+        <section className="gabby-hero" style={{ marginTop: "3rem" }}>
+          <div className="txt">
+            <span className="script-sub">from the bar stools</span>
+            <h2>The community pours</h2>
+            <p className="dek">
+              Verified drinkers, real orders. Log in with your phone and add
+              yours — no passwords, just a text.
+            </p>
+            <div className="gabby-actions">
+              <Link href="/gabbys-corner/review" className="gabby-link">
+                add your pour
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {(!communityReviews || communityReviews.length === 0) && (
+          <div className="gabby-empty">
+            <div className="script-sub">the stools are empty…</div>
+            <p>No community pours yet. Be the first one up.</p>
+          </div>
+        )}
+
+        {communityReviews && communityReviews.length > 0 && (
+          <div className="review-grid">
+            {communityReviews.map((r) => (
+              <article className="review" key={r.id}>
+                <div className="whiskey">{r.whiskey_name}</div>
+                <div className="at">
+                  {r.places?.name ?? r.bar_text ?? "somewhere in Chicago"}
+                  {r.places?.neighborhood ? ` · ${r.places.neighborhood}` : ""}
+                </div>
+                <div className="rating-row">
+                  <span className="rating-num">{Number(r.rating)}</span>
+                  <span className="rating-outof">
+                    / 5 — {r.profiles?.display_name || "Anonymous"}
+                  </span>
+                </div>
+                {r.body && <p className="desc">{r.body}</p>}
               </article>
             ))}
           </div>
