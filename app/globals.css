@@ -794,18 +794,31 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
 
 .map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
 
+.map-viewport-wrap { position: relative; }
+
 .map-viewport {
-  position: relative;
   width: 100%;
-  overflow: hidden;
+  aspect-ratio: 4 / 5;
   border-radius: 12px;
-  cursor: grab;
-  touch-action: none;
+  overflow: hidden;
   background: var(--cream-deep);
 }
-.map-viewport:active { cursor: grabbing; }
 
-.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; will-change: transform; }
+/* Leaflet chrome, restyled to match the tavern-chic palette instead of its
+   default blue-and-white look. */
+.leaflet-container {
+  font-family: var(--font-body), sans-serif;
+  background: var(--cream-deep);
+}
+.leaflet-control-attribution {
+  background: rgba(252, 247, 234, 0.88) !important;
+  color: #7a6552;
+  font-size: 10px;
+  padding: 2px 6px;
+}
+.leaflet-control-attribution a { color: #7a6552; }
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip { background: var(--paper); }
 
 .map-zoom-controls {
   position: absolute;
@@ -814,7 +827,7 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   display: flex;
   flex-direction: column;
   gap: 6px;
-  z-index: 5;
+  z-index: 500;
 }
 .map-zoom-controls button {
   width: 36px;
@@ -832,66 +845,6 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
 }
 .map-zoom-controls button:hover { background: var(--maroon); color: var(--paper); transform: scale(1.08); }
 
-.map-lake { fill: #c9d9ce; }
-.map-lake-label {
-  fill: #8ea698;
-  font-family: var(--font-script), cursive;
-  font-size: 22px;
-  letter-spacing: 0.2em;
-}
-.map-river { fill: none; stroke: #b9cdbd; stroke-width: 20; stroke-linecap: round; }
-.map-zone {
-  fill: var(--cream);
-  stroke: var(--maroon);
-  stroke-width: 2.5;
-  stroke-dasharray: 6 5;
-}
-.map-zone-label {
-  fill: var(--maroon);
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 400;
-}
-
-.map-park { fill: #d7e4da; }
-.map-park-label {
-  fill: #7c9384;
-  font-family: var(--font-body), sans-serif;
-  font-style: italic;
-}
-
-.map-streets line { stroke: var(--brass); stroke-width: 1.6; opacity: 0.85; }
-.map-street-labels text {
-  fill: #8a6a34;
-  font-size: 10.5px;
-  font-style: italic;
-  font-family: var(--font-body), sans-serif;
-}
-
-.map-landmark { fill: var(--brass); stroke: var(--maroon); stroke-width: 1.5; }
-.map-landmark-solid { fill: var(--maroon); }
-.map-landmark-ring { fill: none; stroke: var(--maroon); stroke-width: 2; }
-.map-landmark-labels text {
-  fill: #5e4a30;
-  font-size: 10px;
-  font-style: italic;
-  font-family: var(--font-body), sans-serif;
-}
-
-.map-compass-ring { fill: var(--paper); stroke: var(--maroon); stroke-width: 2; }
-.map-compass-needle { fill: var(--brass); stroke: var(--maroon); stroke-width: 1; }
-.map-compass-needle-2 { fill: var(--maroon); opacity: 0.5; }
-.map-compass-n { fill: var(--maroon); font-size: 13px; font-weight: 800; font-family: var(--font-body), sans-serif; }
-
-.map-title {
-  fill: var(--maroon);
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 400;
-  font-size: 30px;
-}
-
-.map-frame-outer { fill: none; stroke: var(--maroon); stroke-width: 4; }
-.map-frame-inner { fill: none; stroke: var(--brass); stroke-width: 2; stroke-dasharray: 3 6; }
-
 .map-caption {
   font-family: var(--font-script), cursive;
   color: var(--club-light);
@@ -900,7 +853,15 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   padding: 12px 4px 16px;
 }
 
-.map-pin { cursor: pointer; transition: transform 0.15s ease; transform-origin: center; }
+/* Custom Leaflet divIcon markers -- same teardrop silhouette as before,
+   now positioned by Leaflet's iconAnchor instead of manual transform math. */
+.map-pin-icon { cursor: pointer; }
+.map-pin-svg {
+  display: block;
+  transition: transform 0.15s ease;
+  transform-origin: 50% 93%;
+}
+.map-pin-icon.selected .map-pin-svg { transform: scale(1.28); }
 .map-pin-body { fill: var(--brass); stroke: var(--maroon); stroke-width: 2; transition: fill 0.15s ease; }
 .map-pin-dot { fill: var(--maroon); }
 .map-pin-num {
@@ -909,12 +870,11 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   font-weight: 800;
   fill: var(--paper);
 }
-.map-pin.live .map-pin-body { fill: var(--club); }
-.map-pin.live .map-pin-dot { fill: var(--maroon-deep); }
+.map-pin-icon.live .map-pin-body { fill: var(--club); }
+.map-pin-icon.live .map-pin-dot { fill: var(--maroon-deep); }
 .map-pin-live-dot { fill: var(--brass-light); animation: pulse 1.6s ease-in-out infinite; }
-.map-pin.selected .map-pin-body { fill: var(--maroon); }
-.map-pin:hover .map-pin-body { fill: var(--maroon); }
-.map-pin:focus { outline: none; }
+.map-pin-icon.selected .map-pin-body { fill: var(--maroon); }
+.map-pin-icon:hover .map-pin-body { fill: var(--maroon); }
 
 .map-legend { display: flex; flex-direction: column; gap: 22px; }
 .map-callout {
@@ -975,4 +935,18 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
 
 @media (max-width: 860px) {
   .map-layout { grid-template-columns: 1fr; }
+}
+
+/* ---- Phone-sized screens: shorter map, bigger touch targets ---- */
+@media (max-width: 640px) {
+  .map-viewport { height: 58vh; }
+  .map-zoom-controls button { width: 44px; height: 44px; font-size: 1.4rem; }
+  .map-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+  }
+  .map-toolbar .pill { flex: 0 0 auto; }
+  .map-list-item { padding: 11px 10px; font-size: 0.96rem; }
 }
