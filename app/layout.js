@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Shrikhand, Kaushan_Script, Karla } from "next/font/google";
-import Splash from "./splash";
 
 const shrikhand = Shrikhand({
   subsets: ["latin"],
@@ -26,10 +25,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${shrikhand.variable} ${kaushan.variable} ${karla.variable}`}
     >
-      <body>
-        <Splash />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

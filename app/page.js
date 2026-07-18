@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getPlacesWithHappyHours } from "../lib/supabase";
 import Directory from "./directory";
 import Carousel from "./carousel";
+import Splash from "./splash";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function Home() {
 
   return (
     <>
+      <Splash />
       <div className="topbar">
         <div className="container topbar-inner">
           <div className="wordmark">
