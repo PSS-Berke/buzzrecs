@@ -23,9 +23,6 @@ export default async function Home() {
           </div>
           <nav className="topnav">
             <span className="city">Chicago</span>
-            <Link href="/gabbys-corner" className="gabby-link">
-              Gabby&apos;s Corner
-            </Link>
           </nav>
         </div>
       </div>
@@ -56,6 +53,14 @@ export default async function Home() {
           <span>Hours and deals change — always confirm with the venue.</span>
           <span className="fm">Chicago is just the beginning…</span>
         </footer>
+
+        <div className="bottom-gabby">
+          <Link href="/gabbys-corner">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-gabbys.png" alt="Gabby's Corner" />
+          </Link>
+          <span>Gabby&apos;s Corner →</span>
+        </div>
       </main>
     </>
   );
