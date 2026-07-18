@@ -1,27 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
-const OTHER = "__other__";
+const STEPS = ["media", "rate", "spot", "post"];
 
-export default function CommunityReview() {
+export default function ReviewWizard() {
   const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [codeSent, setCodeSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState(false);
+  const [step, setStep] = useState(0);
 
-  const [places, setPlaces] = useState([]);
-  const [placeId, setPlaceId] = useState("");
-  const [barText, setBarText] = useState("");
+  // media
+  const [video, setVideo] = useState(null);
+  const [menuPic, setMenuPic] = useState(null);
+  const [menuPicPreview, setMenuPicPreview] = useState(null);
+
+  // ratings + whiskey
   const [whiskey, setWhiskey] = useState("");
+  const [score, setScore] = useState(null);
+  const [vibe, setVibe] = useState(null);
+  const [menuScore, setMenuScore] = useState(null);
+
+  // spot
+  const [places, setPlaces] = useState([]);
+  const [query, setQuery] = useState("");
+  const [picked, setPicked] = useState(null); // {id,name} or {custom:true,name}
+
+  // post
   const [body, setBody] = useState("");
-  const [score, setScore] = useState(3.5);
   const [displayName, setDisplayName] = useState("");
+
+  const max = isAdmin ? 10 : 5;
+  const min = isAdmin ? 0 : 1;
 
   useEffect(() => {
     if (!supabase) return;
@@ -42,11 +59,41 @@ export default function CommunityReview() {
     if (!session || !supabase) return;
     supabase
       .from("profiles")
-      .select("display_name")
+      .select("is_admin, display_name")
       .eq("id", session.user.id)
       .maybeSingle()
-      .then(({ data }) => setDisplayName(data?.display_name || ""));
+      .then(({ data }) => {
+        setIsAdmin(!!data?.is_admin);
+        setDisplayName(data?.display_name || "");
+      });
   }, [session]);
+
+  useEffect(() => {
+    if (!menuPic) return setMenuPicPreview(null);
+    const url = URL.createObjectURL(menuPic);
+    setMenuPicPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [menuPic]);
+
+  useEffect(() => {
+    setScore((s) => (s == null ? null : Math.min(Math.max(s, min), max)));
+  }, [isAdmin, min, max]);
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return places
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.neighborhood || "").toLowerCase().includes(q)
+      )
+      .slice(0, 6);
+  }, [query, places]);
+
+  const exactMatch = matches.some(
+    (p) => p.name.toLowerCase() === query.trim().toLowerCase()
+  );
 
   const normPhone = (p) => {
     const d = p.replace(/\D/g, "");
@@ -80,33 +127,74 @@ export default function CommunityReview() {
     if (error) return setErr(error.message);
   }
 
+  function next() {
+    setErr("");
+    if (step === 0 && isAdmin && !video)
+      return setErr("Pick the video first — that's the review.");
+    if (step === 1) {
+      if (!whiskey.trim()) return setErr("Name the whiskey.");
+      if (score == null) return setErr("Give it a score.");
+    }
+    if (step === 2 && !picked) return setErr("Pick or name the spot.");
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  }
+
+  async function uploadTo(bucket, file) {
+    const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const path = `${Date.now()}-${safe}`;
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(path, file, { contentType: file.type || undefined });
+    if (error) throw error;
+    return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  }
+
   async function submit(e) {
     e.preventDefault();
     setErr("");
-    if (!whiskey.trim()) return setErr("Name the whiskey.");
-    if (!placeId) return setErr("Pick the bar.");
-    if (placeId === OTHER && !barText.trim()) return setErr("Name the spot.");
     setBusy(true);
     try {
+      let videoUrl = null;
+      let menuUrl = null;
+      if (isAdmin && video) videoUrl = await uploadTo("gabby-videos", video);
+      if (menuPic) menuUrl = await uploadTo("review-media", menuPic);
+
       if (displayName.trim()) {
         await supabase
           .from("profiles")
           .update({ display_name: displayName.trim() })
           .eq("id", session.user.id);
       }
-      const { error: insErr } = await supabase.from("user_reviews").insert({
-        user_id: session.user.id,
-        place_id: placeId === OTHER ? null : placeId,
-        bar_text: placeId === OTHER ? barText.trim() : null,
+
+      const common = {
+        place_id: picked.custom ? null : picked.id,
+        bar_text: picked.custom ? picked.name : null,
         whiskey_name: whiskey.trim(),
         rating: score,
-        body: body.trim() || null,
-      });
+        rating_vibe: vibe,
+        rating_menu: menuScore,
+        menu_photo_url: menuUrl,
+        notes: body.trim() || null,
+      };
+
+      let insErr;
+      if (isAdmin) {
+        ({ error: insErr } = await supabase
+          .from("gabbys_reviews")
+          .insert({ ...common, video_url: videoUrl }));
+      } else {
+        const { notes, ...rest } = common;
+        ({ error: insErr } = await supabase.from("user_reviews").insert({
+          ...rest,
+          body: notes,
+          user_id: session.user.id,
+        }));
+      }
       if (insErr) throw insErr;
       setDone(true);
     } catch (e2) {
       setErr(
-        /rate limit|row-level security/i.test(e2.message || "")
+        /row-level security/i.test(e2.message || "")
           ? "Easy there — five pours a day is the house limit."
           : e2.message || String(e2)
       );
@@ -114,6 +202,35 @@ export default function CommunityReview() {
       setBusy(false);
     }
   }
+
+  const scoreSlider = (val, setVal, label, required) => (
+    <div>
+      <label>
+        {label}:{" "}
+        <strong className="score-echo">{val == null ? "—" : val}</strong> /{" "}
+        {max}
+        {!required && val != null && (
+          <button
+            type="button"
+            className="back-link"
+            style={{ marginLeft: 10 }}
+            onClick={() => setVal(null)}
+          >
+            clear
+          </button>
+        )}
+      </label>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step="0.5"
+        value={val == null ? (min + max) / 2 : val}
+        onChange={(e) => setVal(Number(e.target.value))}
+        onClick={(e) => val == null && setVal(Number(e.target.value))}
+      />
+    </div>
+  );
 
   return (
     <>
@@ -136,16 +253,20 @@ export default function CommunityReview() {
       </div>
 
       <main className="container upload-wrap">
-        <span className="script-sub">from the bar stools</span>
-        <h1 className="upload-title">Add your pour</h1>
+        <span className="script-sub">
+          {isAdmin ? "bartender's entrance" : "from the bar stools"}
+        </span>
+        <h1 className="upload-title">
+          {done ? "Poured." : isAdmin ? "Pour one in" : "Add your pour"}
+        </h1>
 
         {!supabase && <p className="empty">Database not configured.</p>}
 
         {done && (
           <div className="upload-card">
-            <p className="script-sub">poured.</p>
+            <p className="script-sub">cheers.</p>
             <p>
-              Your review is live.{" "}
+              The review is live.{" "}
               <Link href="/gabbys-corner" className="back-link">
                 See it in Gabby&apos;s Corner →
               </Link>
@@ -193,71 +314,204 @@ export default function CommunityReview() {
         )}
 
         {!done && session && (
-          <form onSubmit={submit} className="upload-card stack">
-            <label>The whiskey</label>
-            <input
-              placeholder="e.g. Eagle Rare 10"
-              value={whiskey}
-              onChange={(e) => setWhiskey(e.target.value)}
-              required
-            />
-
-            <label>Where&apos;d you have it?</label>
-            <select
-              value={placeId}
-              onChange={(e) => setPlaceId(e.target.value)}
-              required
+          <form
+            onSubmit={submit}
+            className="upload-card stack"
+            style={{ position: "relative" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                marginBottom: 4,
+              }}
             >
-              <option value="">Pick a spot…</option>
-              {places.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} — {p.neighborhood}
-                </option>
+              {STEPS.map((s, i) => (
+                <span
+                  key={s}
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: "50%",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    border: "2px solid var(--maroon-deep)",
+                    background:
+                      i === step
+                        ? "var(--club)"
+                        : i < step
+                        ? "var(--brass)"
+                        : "transparent",
+                    color: i <= step ? "var(--paper)" : "var(--maroon-deep)",
+                  }}
+                >
+                  {i + 1}
+                </span>
               ))}
-              <option value={OTHER}>Somewhere else…</option>
-            </select>
-            {placeId === OTHER && (
-              <input
-                placeholder="Name the spot"
-                value={barText}
-                onChange={(e) => setBarText(e.target.value)}
-              />
+              <span className="script-sub" style={{ marginLeft: 6 }}>
+                {["the goods", "the verdict", "the spot", "last call"][step]}
+              </span>
+            </div>
+
+            {step === 0 && (
+              <>
+                {isAdmin && (
+                  <>
+                    <label>The video (required)</label>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => setVideo(e.target.files?.[0] || null)}
+                    />
+                    {video && <p className="empty">🎬 {video.name}</p>}
+                  </>
+                )}
+                <label>
+                  Menu pic {isAdmin ? "(optional)" : "(optional but loved)"}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setMenuPic(e.target.files?.[0] || null)}
+                />
+                {menuPicPreview && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={menuPicPreview}
+                    alt="Menu preview"
+                    style={{
+                      maxWidth: 180,
+                      borderRadius: 10,
+                      border: "2px solid var(--maroon-deep)",
+                    }}
+                  />
+                )}
+              </>
             )}
 
-            <label>
-              Your score: <strong className="score-echo">{score}</strong> / 5
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="0.5"
-              value={score}
-              onChange={(e) => setScore(Number(e.target.value))}
-            />
+            {step === 1 && (
+              <>
+                <label>The whiskey</label>
+                <input
+                  placeholder="e.g. Eagle Rare 10"
+                  value={whiskey}
+                  onChange={(e) => setWhiskey(e.target.value)}
+                />
+                {scoreSlider(score, setScore, "The pour", true)}
+                <p className="empty">Optional extra calls:</p>
+                {scoreSlider(vibe, setVibe, "The vibe", false)}
+                {scoreSlider(menuScore, setMenuScore, "The menu", false)}
+              </>
+            )}
 
-            <label>Tasting notes (optional)</label>
-            <textarea
-              rows={3}
-              placeholder="What'd it taste like? Would you order it again?"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
+            {step === 2 && (
+              <>
+                <label>Where&apos;d you have it?</label>
+                <input
+                  placeholder="Start typing… e.g. Gilt, VIG, Maple"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPicked(null);
+                  }}
+                />
+                {picked && (
+                  <p className="empty">
+                    ✓ {picked.name}
+                    {picked.custom ? " (new spot)" : ""}
+                  </p>
+                )}
+                {!picked && query.trim() && (
+                  <div className="stack" style={{ gap: 6 }}>
+                    {matches.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className="btn ghost"
+                        onClick={() => {
+                          setPicked({ id: p.id, name: p.name });
+                          setQuery(p.name);
+                        }}
+                      >
+                        {p.name} — {p.neighborhood}
+                      </button>
+                    ))}
+                    {!exactMatch && (
+                      <button
+                        type="button"
+                        className="btn ghost"
+                        onClick={() =>
+                          setPicked({ custom: true, name: query.trim() })
+                        }
+                      >
+                        Somewhere else: use &quot;{query.trim()}&quot;
+                      </button>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
 
-            <label>Name on the review (optional)</label>
-            <input
-              placeholder="Anonymous"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
+            {step === 3 && (
+              <>
+                <label>Tasting notes (optional)</label>
+                <textarea
+                  rows={3}
+                  placeholder="What'd it taste like? Would you order it again?"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                />
+                {!isAdmin && (
+                  <>
+                    <label>Name on the review (optional)</label>
+                    <input
+                      placeholder="Anonymous"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                    />
+                  </>
+                )}
+                <p className="empty">
+                  {whiskey || "—"} · {picked?.name || "—"} · {score ?? "—"}/
+                  {max}
+                  {vibe != null ? ` · vibe ${vibe}` : ""}
+                  {menuScore != null ? ` · menu ${menuScore}` : ""}
+                </p>
+              </>
+            )}
 
-            <button disabled={busy} className="btn">
-              {busy ? "Pouring…" : "Post it"}
-            </button>
+            <div style={{ display: "flex", gap: 10 }}>
+              {step > 0 && (
+                <button
+                  type="button"
+                  className="btn ghost"
+                  onClick={() => {
+                    setErr("");
+                    setStep((s) => s - 1);
+                  }}
+                >
+                  ← Back
+                </button>
+              )}
+              {step < STEPS.length - 1 && (
+                <button type="button" className="btn" onClick={next}>
+                  Next →
+                </button>
+              )}
+              {step === STEPS.length - 1 && (
+                <button disabled={busy} className="btn">
+                  {busy ? "Pouring…" : "Post the review"}
+                </button>
+              )}
+            </div>
             {err && <p className="form-err">{err}</p>}
             <button
               type="button"
-              className="btn ghost"
+              className="back-link"
+              style={{ alignSelf: "flex-start" }}
               onClick={() => supabase.auth.signOut()}
             >
               Sign out

@@ -84,10 +84,25 @@ export default async function GabbysCorner() {
                 {r.video_url && (
                   <video controls preload="metadata" src={r.video_url} />
                 )}
+                {r.menu_photo_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={r.menu_photo_url}
+                    alt="The menu"
+                    style={{ width: "100%", borderRadius: 10 }}
+                  />
+                )}
                 <div className="rating-row">
                   <span className="rating-num">{Number(r.rating)}</span>
                   <span className="rating-outof">/ 10 — Gabby&apos;s call</span>
                 </div>
+                {(r.rating_vibe != null || r.rating_menu != null) && (
+                  <div className="at">
+                    {r.rating_vibe != null && `vibe ${Number(r.rating_vibe)}/10`}
+                    {r.rating_vibe != null && r.rating_menu != null && " · "}
+                    {r.rating_menu != null && `menu ${Number(r.rating_menu)}/10`}
+                  </div>
+                )}
                 {r.notes && <p className="desc">{r.notes}</p>}
               </article>
             ))}
@@ -126,12 +141,27 @@ export default async function GabbysCorner() {
                   {r.places?.name ?? r.bar_text ?? "somewhere in Chicago"}
                   {r.places?.neighborhood ? ` · ${r.places.neighborhood}` : ""}
                 </div>
+                {r.menu_photo_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={r.menu_photo_url}
+                    alt="The menu"
+                    style={{ width: "100%", borderRadius: 10 }}
+                  />
+                )}
                 <div className="rating-row">
                   <span className="rating-num">{Number(r.rating)}</span>
                   <span className="rating-outof">
                     / 5 — {r.profiles?.display_name || "Anonymous"}
                   </span>
                 </div>
+                {(r.rating_vibe != null || r.rating_menu != null) && (
+                  <div className="at">
+                    {r.rating_vibe != null && `vibe ${Number(r.rating_vibe)}/5`}
+                    {r.rating_vibe != null && r.rating_menu != null && " · "}
+                    {r.rating_menu != null && `menu ${Number(r.rating_menu)}/5`}
+                  </div>
+                )}
                 {r.body && <p className="desc">{r.body}</p>}
               </article>
             ))}

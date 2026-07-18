@@ -225,3 +225,10 @@ it gets uploaded manually.
 - **New tables** (auth chat owns): `profiles` (id→auth.users, display_name, is_admin, auto-created via on_auth_user_created trigger) and `user_reviews` (community pours: whiskey_name, place_id→places nullable, bar_text, rating numeric 1–5, body, photo_url, status live/hidden/pending, FK user_id→profiles for PostgREST embeds). RLS: public reads live rows; users write own; RESTRICTIVE policy caps 5 reviews/user/24h. Verified: anon read 200, anon write 401.
 - **New code**: `/gabbys-corner/review` (community OTP login + 1–5 review form), community feed section on `/gabbys-corner`, `getUserReviews()` in lib/supabase.js. Gabby's 0–10 video flow untouched.
 - Community scale is 1–5 on purpose (Gabby's 0–10 stays distinct).
+
+### Wizard post — 2026-07-18 (auth chat)
+
+- `/gabbys-corner/review` is now a 4-step wizard: media → verdict → spot → post. `/gabbys-corner/upload` redirects there. Admins (profiles.is_admin) get required video (gabby-videos bucket) + 0–10 scale and post to gabbys_reviews; everyone else gets 1–5 and posts to user_reviews.
+- Restaurant picker is typeahead search over approved places with free-text fallback → bar_text.
+- New columns on BOTH review tables: menu_photo_url, rating_vibe, rating_menu (nullable; scale checks match each table). New public storage bucket `review-media` (menu pics, authenticated upload).
+- Feed cards on /gabbys-corner render menu pics + optional vibe/menu scores.
