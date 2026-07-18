@@ -149,6 +149,44 @@ export default function ReviewWizard() {
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   }
 
+  // Big videos go straight to R2 via a presigned URL; falls back to
+  // Supabase storage (50 MB cap) if R2 isn't configured yet.
+  async function uploadVideo(file) {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    const res = await fetch("/api/upload-url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type || "video/mp4",
+        size: file.size,
+      }),
+    });
+    if (res.status === 501) {
+      if (file.size > 50 * 1024 * 1024)
+        throw new Error(
+          "Video hosting is still being set up — for now keep it under 50 MB (about 45 seconds at 720p)."
+        );
+      return uploadTo("gabby-videos", file);
+    }
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.error || "Could not start the upload.");
+    }
+    const { uploadUrl, publicUrl } = await res.json();
+    const put = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type || "video/mp4" },
+      body: file,
+    });
+    if (!put.ok) throw new Error("Video upload failed — try again.");
+    return publicUrl;
+  }
+
   async function submit(e) {
     e.preventDefault();
     setErr("");
@@ -156,7 +194,7 @@ export default function ReviewWizard() {
     try {
       let videoUrl = null;
       let menuUrl = null;
-      if (isAdmin && video) videoUrl = await uploadTo("gabby-videos", video);
+      if (isAdmin && video) videoUrl = await uploadVideo(video);
       if (menuPic) menuUrl = await uploadTo("review-media", menuPic);
 
       if (displayName.trim()) {

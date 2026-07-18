@@ -232,3 +232,9 @@ it gets uploaded manually.
 - Restaurant picker is typeahead search over approved places with free-text fallback → bar_text.
 - New columns on BOTH review tables: menu_photo_url, rating_vibe, rating_menu (nullable; scale checks match each table). New public storage bucket `review-media` (menu pics, authenticated upload).
 - Feed cards on /gabbys-corner render menu pics + optional vibe/menu scores.
+
+### R2 video hosting — 2026-07-18 (auth chat)
+
+- Videos >50MB exceed Supabase free storage cap → moving to Cloudflare R2 (free 10GB, zero egress). POST /api/upload-url (admin JWT required) presigns a direct browser→R2 PUT; public URL stored in video_url. Falls back to gabby-videos bucket (50MB warning) until R2 env vars exist.
+- Vercel env vars (server-only, set in dashboard — NOT .env.production): R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_BASE_URL.
+- Deps: @aws-sdk/client-s3, @aws-sdk/s3-request-presigner.
