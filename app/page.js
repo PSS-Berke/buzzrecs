@@ -62,9 +62,9 @@ export default async function Home() {
         <div className="bottom-gabby">
           <Link href="/gabbys-corner">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-gabbys.png" alt="Gabby's Corner" />
+            <img src="/logo-gabbys.png" alt="" />
+            <span>Gabby&apos;s Corner →</span>
           </Link>
-          <span>Gabby&apos;s Corner →</span>
         </div>
       </main>
     </>

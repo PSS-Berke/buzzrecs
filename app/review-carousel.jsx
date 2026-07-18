@@ -36,8 +36,6 @@ export default function ReviewCarousel({ items, tone = "maroon" }) {
 
   if (!items || items.length === 0) return null;
 
-  const icon = tone === "club" ? "🍹" : "🥃";
-
   return (
     <div className={`rc-wrap rc-${tone}`}>
       {items.length > 1 && (
@@ -60,26 +58,28 @@ export default function ReviewCarousel({ items, tone = "maroon" }) {
       <div className="rc-track" ref={trackRef} onScroll={onScroll}>
         {items.map((r) => (
           <article className="rc-card" key={r.id}>
-            <div className="rc-media">
-              {r.mediaType === "video" && (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video controls preload="metadata" src={r.mediaUrl} playsInline />
-              )}
-              {r.mediaType === "image" && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={r.mediaUrl} alt="" />
-              )}
-              {!r.mediaType && (
-                <div className="rc-media-placeholder">
-                  <span>{icon}</span>
-                </div>
-              )}
-              <div className="rc-scrim" aria-hidden="true" />
-              <span className="rc-rating">
-                <strong>{r.rating}</strong>/{r.ratingOutOf}
-              </span>
-            </div>
+            {r.mediaType && (
+              <div className="rc-media">
+                {r.mediaType === "video" && (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption
+                  <video controls preload="metadata" src={r.mediaUrl} playsInline />
+                )}
+                {r.mediaType === "image" && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.mediaUrl} alt="" />
+                )}
+                <div className="rc-scrim" aria-hidden="true" />
+                <span className="rc-rating">
+                  <strong>{r.rating}</strong>/{r.ratingOutOf}
+                </span>
+              </div>
+            )}
             <div className="rc-body">
+              {!r.mediaType && (
+                <span className="rc-rating rc-rating-static">
+                  <strong>{r.rating}</strong>/{r.ratingOutOf}
+                </span>
+              )}
               <div className="rc-title">{r.title}</div>
               {r.subtitle && <div className="rc-subtitle">{r.subtitle}</div>}
               {r.byline && <div className="rc-byline">{r.byline}</div>}

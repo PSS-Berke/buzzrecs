@@ -395,10 +395,14 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
 
 .bottom-gabby {
   display: flex;
+  justify-content: center;
+  padding: 8px 0 56px;
+}
+.bottom-gabby a {
+  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 8px 0 56px;
 }
 .bottom-gabby img {
   width: 84px;
@@ -413,7 +417,9 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   font-family: var(--font-script), cursive;
   font-size: 1rem;
   color: var(--club-light);
+  transition: color 0.15s ease;
 }
+.bottom-gabby a:hover span { color: var(--maroon); }
 
 /* ================= Gabby's Corner ================= */
 .gabby-hero {
@@ -561,15 +567,6 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   object-fit: cover;
   display: block;
 }
-.rc-media-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3.2rem;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
-}
 .rc-scrim {
   position: absolute;
   inset: auto 0 0 0;
@@ -591,6 +588,12 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   box-shadow: 2px 2px 0 rgba(63, 90, 73, 0.3);
 }
 .rc-rating strong { font-size: 1.15rem; }
+.rc-rating-static {
+  position: static;
+  align-self: flex-start;
+  box-shadow: none;
+  margin-bottom: 2px;
+}
 
 .rc-body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 5px; }
 .rc-title {
