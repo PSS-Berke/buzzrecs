@@ -634,7 +634,46 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   box-shadow: 8px 8px 0 rgba(63, 90, 73, 0.45);
   padding: 14px 14px 6px;
 }
-.map-svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+
+.map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
+
+.map-viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: grab;
+  touch-action: none;
+  background: var(--cream-deep);
+}
+.map-viewport:active { cursor: grabbing; }
+
+.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; will-change: transform; }
+
+.map-zoom-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+.map-zoom-controls button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--maroon);
+  background: var(--paper);
+  color: var(--maroon);
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(125, 52, 68, 0.3);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.map-zoom-controls button:hover { background: var(--maroon); color: var(--paper); transform: scale(1.08); }
 
 .map-lake { fill: #c9d9ce; }
 .map-lake-label {
@@ -643,7 +682,7 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   font-size: 22px;
   letter-spacing: 0.2em;
 }
-.map-river { fill: none; stroke: #b9cdbd; stroke-width: 26; stroke-linecap: round; }
+.map-river { fill: none; stroke: #b9cdbd; stroke-width: 20; stroke-linecap: round; }
 .map-zone {
   fill: var(--cream);
   stroke: var(--maroon);
@@ -655,6 +694,46 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   font-family: var(--font-display), Georgia, serif;
   font-weight: 400;
 }
+
+.map-park { fill: #d7e4da; }
+.map-park-label {
+  fill: #7c9384;
+  font-family: var(--font-body), sans-serif;
+  font-style: italic;
+}
+
+.map-streets line { stroke: var(--brass); stroke-width: 1.6; opacity: 0.85; }
+.map-street-labels text {
+  fill: #8a6a34;
+  font-size: 10.5px;
+  font-style: italic;
+  font-family: var(--font-body), sans-serif;
+}
+
+.map-landmark { fill: var(--brass); stroke: var(--maroon); stroke-width: 1.5; }
+.map-landmark-solid { fill: var(--maroon); }
+.map-landmark-ring { fill: none; stroke: var(--maroon); stroke-width: 2; }
+.map-landmark-labels text {
+  fill: #5e4a30;
+  font-size: 10px;
+  font-style: italic;
+  font-family: var(--font-body), sans-serif;
+}
+
+.map-compass-ring { fill: var(--paper); stroke: var(--maroon); stroke-width: 2; }
+.map-compass-needle { fill: var(--brass); stroke: var(--maroon); stroke-width: 1; }
+.map-compass-needle-2 { fill: var(--maroon); opacity: 0.5; }
+.map-compass-n { fill: var(--maroon); font-size: 13px; font-weight: 800; font-family: var(--font-body), sans-serif; }
+
+.map-title {
+  fill: var(--maroon);
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 30px;
+}
+
+.map-frame-outer { fill: none; stroke: var(--maroon); stroke-width: 4; }
+.map-frame-inner { fill: none; stroke: var(--brass); stroke-width: 2; stroke-dasharray: 3 6; }
 
 .map-caption {
   font-family: var(--font-script), cursive;
@@ -672,7 +751,6 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   font-size: 15px;
   font-weight: 800;
   fill: var(--paper);
-  text-anchor: middle;
 }
 .map-pin.live .map-pin-body { fill: var(--club); }
 .map-pin.live .map-pin-dot { fill: var(--maroon-deep); }
