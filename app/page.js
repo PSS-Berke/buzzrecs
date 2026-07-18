@@ -25,6 +25,9 @@ export default async function Home() {
           </div>
           <nav className="topnav">
             <span className="city">Chicago</span>
+            <Link href="/map" className="map-link">
+              The Map
+            </Link>
           </nav>
         </div>
       </div>

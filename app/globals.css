@@ -154,6 +154,22 @@ body.splash-lock { overflow: hidden; }
   background: var(--maroon);
   transform: rotate(-2deg) scale(1.05);
 }
+.map-link {
+  font-family: var(--font-script), cursive;
+  font-size: 1.05rem;
+  color: var(--maroon);
+  background: transparent;
+  padding: 6px 18px 8px;
+  border-radius: var(--wobble-2);
+  border: 2px solid var(--brass);
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+  display: inline-block;
+}
+.map-link:hover {
+  background: var(--brass);
+  color: var(--paper);
+  transform: rotate(2deg) scale(1.05);
+}
 
 /* ---- Hero ---- */
 .hero { padding: 56px 0 8px; }
@@ -596,4 +612,132 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
   .hero { padding: 40px 0 8px; }
   .card { padding: 20px; }
   .carousel { aspect-ratio: 16 / 10; }
+}
+
+/* ================= Map page ================= */
+.map-hero .back-link { margin-top: 16px; display: inline-block; }
+
+.map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 28px;
+  padding: 30px 0 50px;
+  align-items: start;
+}
+
+.map-canvas {
+  background: var(--paper);
+  border: 3px solid var(--maroon);
+  outline: 2px solid var(--brass);
+  outline-offset: 4px;
+  border-radius: 22px;
+  box-shadow: 8px 8px 0 rgba(63, 90, 73, 0.45);
+  padding: 14px 14px 6px;
+}
+.map-svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+
+.map-lake { fill: #c9d9ce; }
+.map-lake-label {
+  fill: #8ea698;
+  font-family: var(--font-script), cursive;
+  font-size: 22px;
+  letter-spacing: 0.2em;
+}
+.map-river { fill: none; stroke: #b9cdbd; stroke-width: 26; stroke-linecap: round; }
+.map-zone {
+  fill: var(--cream);
+  stroke: var(--maroon);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 5;
+}
+.map-zone-label {
+  fill: var(--maroon);
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+}
+
+.map-caption {
+  font-family: var(--font-script), cursive;
+  color: var(--club-light);
+  font-size: 1rem;
+  text-align: center;
+  padding: 12px 4px 16px;
+}
+
+.map-pin { cursor: pointer; transition: transform 0.15s ease; transform-origin: center; }
+.map-pin-body { fill: var(--brass); stroke: var(--maroon); stroke-width: 2; transition: fill 0.15s ease; }
+.map-pin-dot { fill: var(--maroon); }
+.map-pin-num {
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  fill: var(--paper);
+  text-anchor: middle;
+}
+.map-pin.live .map-pin-body { fill: var(--club); }
+.map-pin.live .map-pin-dot { fill: var(--maroon-deep); }
+.map-pin-live-dot { fill: var(--brass-light); animation: pulse 1.6s ease-in-out infinite; }
+.map-pin.selected .map-pin-body { fill: var(--maroon); }
+.map-pin:hover .map-pin-body { fill: var(--maroon); }
+.map-pin:focus { outline: none; }
+
+.map-legend { display: flex; flex-direction: column; gap: 22px; }
+.map-callout {
+  background: var(--paper);
+  border: 2px solid var(--maroon);
+  border-radius: 18px 22px 14px 20px;
+  padding: 20px 22px;
+  box-shadow: 4px 4px 0 rgba(63, 90, 73, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.map-hood h4 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--maroon);
+  border-bottom: 1px solid var(--brass);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+.map-hood ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.map-list-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  padding: 7px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease;
+}
+.map-list-item .no {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--brass);
+  letter-spacing: 0.04em;
+}
+.map-list-item:hover { background: var(--cream-deep); }
+.map-list-item.active { background: var(--maroon); color: var(--paper); }
+.map-list-item.active .no { color: var(--brass-light); }
+.dot-live {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--club);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.map-list-item.active .dot-live { background: var(--brass-light); }
+
+@media (max-width: 860px) {
+  .map-layout { grid-template-columns: 1fr; }
 }
