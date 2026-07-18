@@ -27,12 +27,16 @@
 | Publishable (anon) key | `sb_publishable_RQ15slds3Pm55oFveFwG6Q_p1p_kMHi` (public by design; RLS protects data) |
 | Secret key | NOT stored here. In Supabase dashboard → Settings → API Keys |
 
-### Deploy process (design chat)
+### Deploy process — GIT-BASED as of 2026-07-18
 
-- No git repo yet. Deploys go through the Vercel MCP `deploy_to_vercel` with
-  the full inline file tree, `target: production`, name `buzzrecs`, and
-  `projectSettings.framework = "nextjs"` (required — project was created empty
-  and won't auto-detect).
+- **Repo: https://github.com/PSS-Berke/buzzrecs (private, branch `main`)** —
+  connected to the Vercel project. Push to `main` = production deploy. This is
+  now THE shared source of truth across chats; both chats clone/push here.
+  Auth via GitHub CLI device flow (Berke approves at github.com/login/device).
+- Legacy fallback: Vercel MCP `deploy_to_vercel` with inline file tree,
+  `target: production`, name `buzzrecs`,
+  `projectSettings.framework = "nextjs"` (required — project won't
+  auto-detect). Avoid mixing this with git deploys.
 - The Vercel connector token **cannot create projects** (403); deploy into the
   existing `buzzrecs` project only.
 - Env vars ship via a `.env.production` file in the deploy tree (NEXT_PUBLIC_*
@@ -182,9 +186,11 @@ it gets uploaded manually.
 
 ## Brand assets
 
-- `buzzrecs-circle.png`, `gabbys-corner-circle.png` — circle-cropped logo
-  marks (1122×1122, transparent corners) in the Buzz Recs folder root, made
-  from Berke's originals. Not yet wired into the site UI.
+- In-app (repo `public/`): `logo-wordmark.png` (Buzz's Recs wordmark chip —
+  topbar on all pages), `logo-gabbys.png` (Gabby's Corner crest — hero on
+  /gabbys-corner with orbiting twist), `logo-buzzrecs.png` (circle mark,
+  spare). All quantized/optimized from Berke's originals.
+- Originals + full-res circle crops live in the Buzz Recs folder root.
 
 ## Roadmap / open items
 
@@ -195,7 +201,7 @@ it gets uploaded manually.
 - [ ] Community review form/feed on /gabbys-corner (auth chat)
 - [ ] Wire circle logo marks into site UI
 - [ ] Scheduled task (Cowork) to re-verify core spots' hours weekly
-- [ ] GitHub repo + git-based deploys (currently fileless deploys)
+- [x] GitHub repo + git-based deploys — github.com/PSS-Berke/buzzrecs
 - [ ] User-submitted places (status='pending' + moderation)
 - [ ] More cities
 - [ ] Vercel team transfer to Parallel Strategies when Berke's role allows
