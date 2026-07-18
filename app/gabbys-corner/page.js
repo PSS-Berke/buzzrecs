@@ -47,9 +47,6 @@ export default async function GabbysCorner() {
               <Link href="/" className="back-link">
                 ← back to the happy hours
               </Link>
-              <Link href="/gabbys-corner/upload" className="gabby-link">
-                pour one in
-              </Link>
             </div>
           </div>
           <WhiskeyGlass />
