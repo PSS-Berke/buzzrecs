@@ -1,0 +1,101 @@
+import Link from "next/link";
+import { getGabbysReviews } from "../../lib/supabase";
+import WhiskeyGlass from "../whiskey-glass";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Gabby's Corner — BuzzRecs",
+  description: "Gabby's whiskey reviews from Chicago's best bars.",
+};
+
+export default async function GabbysCorner() {
+  const reviews = await getGabbysReviews();
+
+  return (
+    <>
+      <div className="topbar">
+        <div className="container topbar-inner">
+          <Link href="/" className="wordmark">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-wordmark.png"
+              alt="Buzz's Recs"
+              className="wm-chip"
+            />
+          </Link>
+          <nav className="topnav">
+            <span className="city">Chicago</span>
+          </nav>
+        </div>
+      </div>
+
+      <main className="container">
+        <section className="gabby-hero">
+          <div className="txt">
+            <span className="script-sub">neat, with one big cube</span>
+            <h1>Gabby&apos;s Corner</h1>
+            <p className="dek">
+              One whiskey, one bar, one honest rating at a time. Gabby drinks
+              her way through Chicago&apos;s back bars so you know exactly what
+              to order — and where to order it.
+            </p>
+            <div className="gabby-actions">
+              <Link href="/" className="back-link">
+                ← back to the happy hours
+              </Link>
+              <Link href="/gabbys-corner/upload" className="gabby-link">
+                pour one in
+              </Link>
+            </div>
+          </div>
+          <WhiskeyGlass />
+        </section>
+
+        {(!reviews || reviews.length === 0) && (
+          <div className="gabby-empty">
+            <div className="script-sub">the glass is poured…</div>
+            <p>
+              First reviews landing soon. Gabby is out doing very important
+              research.
+            </p>
+          </div>
+        )}
+
+        {reviews && reviews.length > 0 && (
+          <div className="review-grid">
+            {reviews.map((r) => (
+              <article className="review" key={r.id}>
+                <div className="whiskey">
+                  {r.places?.name ?? r.bar_text ?? r.whiskey_name}
+                </div>
+                {(r.whiskey_name || r.places?.neighborhood) && (
+                  <div className="at">
+                    {r.whiskey_name
+                      ? `${r.whiskey_name}`
+                      : ""}
+                    {r.whiskey_name && r.places?.neighborhood ? " · " : ""}
+                    {r.places?.neighborhood ?? ""}
+                  </div>
+                )}
+                {r.video_url && (
+                  <video controls preload="metadata" src={r.video_url} />
+                )}
+                <div className="rating-row">
+                  <span className="rating-num">{Number(r.rating)}</span>
+                  <span className="rating-outof">/ 10 — Gabby&apos;s call</span>
+                </div>
+                {r.notes && <p className="desc">{r.notes}</p>}
+              </article>
+            ))}
+          </div>
+        )}
+
+        <footer className="site">
+          <span>Drink responsibly. Rate ruthlessly.</span>
+          <span className="fm">— Gabby</span>
+        </footer>
+      </main>
+    </>
+  );
+}
