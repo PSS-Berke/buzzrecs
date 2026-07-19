@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { isHappyHourNow, formatTime } from "../lib/isHappyHourNow";
+import { getPlaceLogo } from "../lib/logos";
 
 const HOOD_ORDER = [
   "River North",
@@ -100,13 +101,23 @@ export default function Directory({ places }) {
               </span>
             </div>
             <div className="grid">
-              {spots.map((p) => (
+              {spots.map((p) => {
+                const logo = getPlaceLogo(p.name);
+                return (
                 <article className="card" key={p.id}>
                   <div className="card-top">
-                    <h3>
-                      <span className="no">No. {numberOf[p.id]}</span>
-                      {p.name}
-                    </h3>
+                    <div className="card-title-row">
+                      {logo && (
+                        <span className={`card-logo${logo.dark ? " dark" : ""}`}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={logo.src} alt="" />
+                        </span>
+                      )}
+                      <h3>
+                        <span className="no">No. {numberOf[p.id]}</span>
+                        {p.name}
+                      </h3>
+                    </div>
                     {p.liveNow && (
                       <span className="badge-now">
                         <span className="dot" /> On now
@@ -146,7 +157,8 @@ export default function Directory({ places }) {
                     )}
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           </section>
         );

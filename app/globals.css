@@ -314,6 +314,22 @@ body.splash-lock { overflow: hidden; }
 .grid .card:nth-child(3n):hover { transform: translateY(-5px); }
 .card:hover { box-shadow: 7px 9px 0 rgba(63, 90, 73, 0.4); }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.card-title-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.card-logo {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 2px solid var(--brass);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  box-shadow: 2px 2px 0 rgba(125, 52, 68, 0.25);
+}
+.card-logo.dark { background: var(--maroon-deep); }
+.card-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .card h3 {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 400;
