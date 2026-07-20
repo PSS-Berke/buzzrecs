@@ -873,7 +873,14 @@ footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; 
 
 .map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
 
-.map-viewport-wrap { position: relative; }
+.map-viewport-wrap {
+  position: relative;
+  /* Leaflet's own controls/popups use z-index up to 1000, which would
+     otherwise paint above the sticky topbar (z-index: 50). Isolating
+     creates a new stacking context so nothing inside this wrapper can
+     ever stack above elements outside it. */
+  isolation: isolate;
+}
 
 .map-viewport {
   width: 100%;
