@@ -1261,3 +1261,186 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   text-underline-offset: 3px;
 }
 .rc-byline-link:hover { color: var(--club); }
+
+/* ---- Social feed (Gabby's Corner) ---- */
+.feed {
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.feed-label { display: block; text-align: center; font-size: 1.15rem; }
+.post-card {
+  background: var(--paper);
+  border: 2px solid var(--maroon-deep);
+  border-radius: var(--wobble);
+  overflow: hidden;
+}
+.post-gabby { box-shadow: 5px 5px 0 var(--maroon); }
+.post-community { box-shadow: 5px 5px 0 var(--club); }
+.post-featured { border-width: 3px; box-shadow: 7px 7px 0 var(--brass); }
+.post-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--brass);
+}
+.post-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brass);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  background: var(--cream);
+}
+.post-avatar-empty {
+  font-family: var(--font-display), serif;
+  font-size: 1rem;
+  background: var(--maroon);
+  color: var(--paper);
+}
+.post-who { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.post-byline {
+  font-family: var(--font-script), cursive;
+  font-size: 1.05rem;
+  color: var(--club);
+}
+.post-byline:hover { color: var(--maroon); }
+.post-gabby .post-byline { color: var(--maroon); }
+.post-where {
+  font-size: 0.82rem;
+  color: var(--maroon-deep);
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.post-time {
+  font-size: 0.8rem;
+  color: var(--brass);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  flex: none;
+}
+.post-time:hover { color: var(--club); }
+.post-media { background: #1c1512; }
+.post-media video, .post-media img {
+  display: block;
+  width: 100%;
+  max-height: 560px;
+  object-fit: contain;
+}
+.post-body { padding: 12px 14px 14px; }
+.post-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.post-whiskey {
+  font-family: var(--font-display), serif;
+  font-size: 1.15rem;
+  color: var(--maroon-deep);
+}
+.post-rating {
+  font-family: var(--font-display), serif;
+  color: var(--paper);
+  background: var(--club);
+  border-radius: var(--wobble-2);
+  padding: 2px 12px 4px;
+  font-size: 0.95rem;
+  flex: none;
+}
+.post-gabby .post-rating { background: var(--maroon); }
+.post-rating strong { font-size: 1.2rem; }
+.post-subratings {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+  font-family: var(--font-script), cursive;
+  color: var(--club-light);
+  font-size: 0.95rem;
+}
+.post-notes { margin: 8px 0 0; font-size: 0.98rem; }
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--brass);
+}
+.cheer-btn {
+  font-family: var(--font-script), cursive;
+  font-size: 1.05rem;
+  color: var(--club);
+  background: transparent;
+  border: 2px solid var(--club);
+  border-radius: var(--wobble-2);
+  padding: 3px 14px 5px;
+  cursor: pointer;
+}
+.cheer-btn:hover { transform: rotate(-1.5deg) scale(1.05); }
+.cheer-btn.on { background: var(--club); color: var(--paper); }
+.comment-toggle {
+  font-family: var(--font-script), cursive;
+  font-size: 0.98rem;
+  color: var(--maroon);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-underline-offset: 4px;
+}
+.comment-toggle:hover { color: var(--club); }
+.comments { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.comment {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.95rem;
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 7px 10px;
+}
+.comment-who { flex: none; }
+.comment-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.comment-delete {
+  background: none;
+  border: none;
+  color: var(--maroon);
+  cursor: pointer;
+  font-size: 1rem;
+  flex: none;
+  opacity: 0.6;
+}
+.comment-delete:hover { opacity: 1; }
+.comment-form { display: flex; gap: 8px; margin-top: 4px; }
+.comment-form input {
+  flex: 1;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.95rem;
+  color: var(--maroon-deep);
+  background: var(--cream);
+  border: 2px solid var(--maroon-deep);
+  border-radius: 10px;
+  padding: 7px 10px;
+}
+.comment-send {
+  font-family: var(--font-script), cursive;
+  font-size: 0.98rem;
+  color: var(--paper);
+  background: var(--maroon);
+  border: 2px solid var(--brass);
+  border-radius: var(--wobble-2);
+  padding: 3px 14px 5px;
+  cursor: pointer;
+}
+.comment-send:disabled { opacity: 0.5; cursor: default; }

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { getGabbysReviews, getUserReviews } from "../../lib/supabase";
+import { getUnifiedFeed } from "../../lib/supabase";
 import WhiskeyGlass from "../whiskey-glass";
-import ReviewCarousel from "../review-carousel";
+import SocialFeed from "../social-feed";
 import AuthChip from "../auth-chip";
 
 export const dynamic = "force-dynamic";
@@ -12,43 +12,9 @@ export const metadata = {
 };
 
 export default async function GabbysCorner() {
-  const [reviews, communityReviews] = await Promise.all([
-    getGabbysReviews(),
-    getUserReviews(),
-  ]);
-
-  const gabbyItems = (reviews || []).map((r) => ({
-    id: r.id,
-    title: r.places?.name ?? r.bar_text ?? r.whiskey_name,
-    subtitle: [r.whiskey_name, r.places?.neighborhood].filter(Boolean).join(" · "),
-    byline: "Gabby's call",
-    mediaType: r.video_url ? "video" : r.menu_photo_url ? "image" : null,
-    mediaUrl: r.video_url || r.menu_photo_url || null,
-    rating: Number(r.rating),
-    ratingOutOf: 10,
-    vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,
-    menu: r.rating_menu != null ? Number(r.rating_menu) : null,
-    notes: r.notes,
-  }));
-
-  const communityItems = (communityReviews || []).map((r) => ({
-    id: r.id,
-    title: r.whiskey_name,
-    subtitle: [r.places?.name ?? r.bar_text ?? "somewhere in Chicago", r.places?.neighborhood]
-      .filter(Boolean)
-      .join(" · "),
-    byline: r.profiles?.handle
-      ? `@${r.profiles.handle}`
-      : r.profiles?.display_name || "Anonymous",
-    bylineHref: r.profiles?.handle ? `/u/${r.profiles.handle}` : null,
-    mediaType: r.menu_photo_url ? "image" : null,
-    mediaUrl: r.menu_photo_url || null,
-    rating: Number(r.rating),
-    ratingOutOf: 5,
-    vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,
-    menu: r.rating_menu != null ? Number(r.rating_menu) : null,
-    notes: r.body,
-  }));
+  const feed = (await getUnifiedFeed()) || [];
+  const featured = feed.find((i) => i.kind === "gabby") || null;
+  const rest = feed.filter((i) => i !== featured);
 
   return (
     <>
@@ -91,13 +57,7 @@ export default async function GabbysCorner() {
           <WhiskeyGlass />
         </section>
 
-        {communityItems.length > 0 && (
-          <ReviewCarousel items={communityItems} tone="club" />
-        )}
-
-        {gabbyItems.length > 0 && (
-          <ReviewCarousel items={gabbyItems} tone="maroon" />
-        )}
+        <SocialFeed featured={featured} items={rest} />
 
         <p style={{ marginTop: "2rem" }}>
           <Link href="/" className="back-link">

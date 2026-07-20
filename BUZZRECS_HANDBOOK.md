@@ -294,6 +294,26 @@ it gets uploaded manually.
 - CSS: profile/avatar/pour-row/u-stats/.rc-byline-link styles at the bottom
   of globals.css. `.stack textarea` styled (bio field).
 
+## Social feed — 2026-07-19 (social chat, Phase 3)
+
+- **/gabbys-corner is now one vertical feed** (`app/social-feed.jsx`),
+  newest first: latest Gabby post featured up top ("Gabby's latest call"),
+  everything else follows. Gabby posts = maroon shadow + crest avatar +
+  0–10; community = club-green + 1–5. ReviewCarousel still used on /u/[handle].
+- **New tables** (SQL in `supabase/2026-07-19-social.sql`, applied):
+  `cheers` (PK user_id+review_kind+review_id) and `comments` (body ≤500,
+  status live|hidden), both polymorphic via review_kind 'gabby'|'community'
+  — no FK to review rows on purpose (two review tables). RLS: public read
+  (comments live only), own insert/delete, RESTRICTIVE 30 comments/user/24h.
+- **Permalinks**: `/gabbys-corner/pour/[kind]/[id]` — single post, comments
+  expanded, share-friendly metadata.
+- `lib/supabase.js`: `getUnifiedFeed()` (merge + cheer/comment counts in two
+  grouped queries), `getSingleReview(kind, id)`.
+- Cheering/commenting when signed out opens the login sheet; comment focus
+  with no handle triggers onboarding.
+- Deferred (Phase 4): report/moderation UI, follows, OG images, feed
+  pagination past 50+50.
+
 ## Changelog
 
 - **2026-07-18 (later)** — Auth chat: Twilio Verify + Supabase phone auth
