@@ -86,24 +86,6 @@ export default async function GabbysCorner() {
           <WhiskeyGlass />
         </section>
 
-        <section className="gabby-hero" style={{ marginTop: "3rem" }}>
-          <div className="txt">
-            <span className="script-sub">from the bar stools</span>
-            <h2>The community pours</h2>
-            <p className="dek">
-              Verified drinkers, real orders. Log in with your phone and add
-              yours — no passwords, just a text.
-            </p>
-          </div>
-        </section>
-
-        {(!communityReviews || communityReviews.length === 0) && (
-          <div className="gabby-empty">
-            <div className="script-sub">the stools are empty…</div>
-            <p>No community pours yet. Be the first one up.</p>
-          </div>
-        )}
-
         {communityItems.length > 0 && (
           <ReviewCarousel items={communityItems} tone="club" />
         )}
