@@ -40,5 +40,22 @@ export async function GET() {
     { expiresIn: 300 }
   );
 
-  return NextResponse.json({ status: res.status, headers, testUploadUrl });
+  // Replay the preflight against the REAL presigned URL (query included)
+  const pf = await fetch(testUploadUrl, {
+    method: "OPTIONS",
+    headers: {
+      Origin: "https://buzzrecs.vercel.app",
+      "Access-Control-Request-Method": "PUT",
+      "Access-Control-Request-Headers": "content-type",
+    },
+  });
+  const pfHeaders = {};
+  pf.headers.forEach((v, k) => (pfHeaders[k] = v));
+
+  return NextResponse.json({
+    status: res.status,
+    headers,
+    testUploadUrl,
+    presignedPreflight: { status: pf.status, headers: pfHeaders },
+  });
 }
