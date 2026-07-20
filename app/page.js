@@ -5,6 +5,7 @@ import Carousel from "./carousel";
 import Splash from "./splash";
 import AuthChip from "./auth-chip";
 import CityChip from "./city-chip";
+import MenuNav from "./menu-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +28,7 @@ export default async function Home() {
           </div>
           <nav className="topnav">
             <CityChip />
-            <Link href="/patios" className="map-link">
-              Patios
-            </Link>
-            <Link href="/map" className="map-link">
-              The Map
-            </Link>
+            <MenuNav />
             <AuthChip />
           </nav>
         </div>

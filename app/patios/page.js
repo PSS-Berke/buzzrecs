@@ -4,6 +4,7 @@ import PatioDirectory from "./patio-directory";
 import Carousel from "../carousel";
 import AuthChip from "../auth-chip";
 import CityChip from "../city-chip";
+import MenuNav from "../menu-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -33,12 +34,7 @@ export default async function Patios() {
           </div>
           <nav className="topnav">
             <CityChip />
-            <Link href="/" className="map-link">
-              Happy Hours
-            </Link>
-            <Link href="/map" className="map-link">
-              The Map
-            </Link>
+            <MenuNav />
             <AuthChip />
           </nav>
         </div>
