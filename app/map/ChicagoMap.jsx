@@ -75,6 +75,7 @@ export default function ChicagoMap({ places }) {
   const mapRef = useRef(null);
   const markersRef = useRef({});
   const resizeObserverRef = useRef(null);
+  const boundsRef = useRef(null);
 
   // Leaflet touches `window` at import time in some code paths, so it's
   // loaded dynamically inside an effect -- this only ever runs client-side,
@@ -99,9 +100,11 @@ export default function ChicagoMap({ places }) {
         maxZoom: 19,
       }).addTo(map);
 
+      const latLngs = [];
       withLive.forEach((p) => {
         const c = PIN_COORDS[p.slug];
         if (!c) return;
+        latLngs.push([c.lat, c.lng]);
         const label = `No. ${numberOf[p.id]} ${p.name}`;
         const icon = L.divIcon({
           html: pinIconHtml(numberOf[p.id], p.liveNow, label),
@@ -114,6 +117,11 @@ export default function ChicagoMap({ places }) {
         markersRef.current[p.id] = marker;
       });
 
+      // The opening view should show every spot, not just a fixed downtown
+      // crop -- fit to the actual bounds of every pin instead of a hand-set
+      // center/zoom, so it stays correct as new neighborhoods get added.
+      boundsRef.current = latLngs.length ? L.latLngBounds(latLngs) : null;
+
       mapRef.current = map;
 
       // Leaflet reads its container's pixel size once, synchronously, at
@@ -123,7 +131,12 @@ export default function ChicagoMap({ places }) {
       // nothing else constrains it -- bleeds outside its rounded box. A
       // ResizeObserver keeps it correctly sized for the container's actual,
       // current dimensions at all times (including later window resizes).
-      requestAnimationFrame(() => map.invalidateSize());
+      // Fitting bounds is also deferred to the same frame, since it needs
+      // the container's settled (correct) size to compute the right zoom.
+      requestAnimationFrame(() => {
+        map.invalidateSize();
+        if (boundsRef.current) map.fitBounds(boundsRef.current, { padding: [30, 30] });
+      });
       if (typeof ResizeObserver !== "undefined") {
         const ro = new ResizeObserver(() => map.invalidateSize());
         ro.observe(containerRef.current);
@@ -154,7 +167,12 @@ export default function ChicagoMap({ places }) {
 
   const resetView = useCallback(() => {
     setActiveHood(null);
-    if (mapRef.current) mapRef.current.flyTo([CITY_VIEW.lat, CITY_VIEW.lng], CITY_VIEW.zoom, { duration: 1.1 });
+    if (!mapRef.current) return;
+    if (boundsRef.current) {
+      mapRef.current.flyToBounds(boundsRef.current, { padding: [30, 30], duration: 1.1 });
+    } else {
+      mapRef.current.flyTo([CITY_VIEW.lat, CITY_VIEW.lng], CITY_VIEW.zoom, { duration: 1.1 });
+    }
   }, []);
 
   const handleListClick = (place) => {
