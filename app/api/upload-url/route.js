@@ -92,6 +92,10 @@ export async function POST(req) {
       accessKeyId: cfg.accessKeyId,
       secretAccessKey: cfg.secretAccessKey,
     },
+    // R2 + SDK v3: default integrity checksums bake an empty-body CRC32
+    // into presigned URLs, which rejects real browser uploads.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
 
   const safe = filename.replace(/[^a-zA-Z0-9.\-_]/g, "_");
