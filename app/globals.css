@@ -873,6 +873,9 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 
   .rc-arrow { display: none !important; }
   .rc-card { width: 82vw; }
+
+  /* keep the Menu icon off the right edge on phones */
+  .topbar-inner { padding-right: 10px; }
 }
 
 /* ================= Map page ================= */
@@ -1136,7 +1139,7 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 .mode-btn:hover { transform: translateY(-1px); }
-.mode-btn .mode-icon { display: inline-flex; width: 16px; height: 16px; flex-shrink: 0; }
+.mode-btn .mode-icon { display: inline-flex; width: 26px; height: 26px; flex-shrink: 0; }
 .mode-btn.active { background: var(--maroon); color: var(--paper); }
 .mode-btn.active .mode-icon { color: var(--paper); }
 
@@ -1769,5 +1772,5 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 }
 .menu-btn:hover { transform: translateY(-1px) rotate(1.5deg); }
 .menu-btn.open { filter: drop-shadow(0 0 0.5px var(--brass)); }
-.menu-mark { height: 40px; width: auto; display: block; overflow: visible; }
+.menu-mark { height: 50px; width: auto; display: block; overflow: visible; }
 .menu-btn.open .menu-mark { transform: rotate(-2deg); }
