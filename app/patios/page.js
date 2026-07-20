@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPlacesWithPatios } from "../../lib/supabase";
 import PatioDirectory from "./patio-directory";
+import PatioSplash from "./patio-splash";
 import Carousel from "../carousel";
 import CityChip from "../city-chip";
 import MenuNav from "../menu-nav";
@@ -19,6 +20,7 @@ export default async function Patios() {
 
   return (
     <>
+      <PatioSplash />
       <div className="topbar">
         <div className="container topbar-inner">
           <div className="wordmark">
