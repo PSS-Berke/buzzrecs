@@ -153,7 +153,12 @@ export default function PatioDirectory({ places }) {
                   pt.fire_pit && "Fire pit",
                   pt.live_music && "Live music",
                   ...(pt.features || []),
-                ].filter(Boolean);
+                ]
+                  .filter(Boolean)
+                  .filter((c, i, arr) => {
+                    const k = String(c).toLowerCase();
+                    return arr.findIndex((x) => String(x).toLowerCase() === k) === i;
+                  });
 
                 return (
                   <article className={`card${isFlipped ? " flipped" : ""}`} key={p.id}>
