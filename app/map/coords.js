@@ -61,6 +61,18 @@ export const PIN_COORDS = {
   "about-last-knife": { lat: 41.8850130, lng: -87.6245900 },
   "flight-club-chicago": { lat: 41.8865050, lng: -87.6314551 },
   "90th-meridian": { lat: 41.8785780, lng: -87.6318352 },
+  // Lincoln Park batch (geocoded 2026-07-19 via Nominatim)
+  "summer-house-santa-monica": { lat: 41.9176217, lng: -87.6487786 },
+  "cafe-ba-ba-reeba": { lat: 41.9189677, lng: -87.6488891 },
+  "mon-ami-gabi": { lat: 41.9239642, lng: -87.6368112 },
+  "galit": { lat: 41.9262841, lng: -87.6495306 },
+  "ramen-san-lincoln-park": { lat: 41.9177795, lng: -87.6487367 },
+  "sushi-san-lincoln-park": { lat: 41.9170592, lng: -87.6485674 },
+  "homeslice": { lat: 41.9218744, lng: -87.6524401 },
+  "avli-taverna": { lat: 41.9286556, lng: -87.6623906 },
+  "the-j-parker": { lat: 41.9153354, lng: -87.6345494 },
+  "the-tin-lizzie": { lat: 41.9277023, lng: -87.6415754 },
+  "gaslight-bar-and-grille": { lat: 41.9261508, lng: -87.6588073 },
 };
 
 // Neighborhood centroids, for the quick-jump chips' flyTo target.
