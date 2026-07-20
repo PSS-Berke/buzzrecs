@@ -73,6 +73,16 @@ export const PIN_COORDS = {
   "the-j-parker": { lat: 41.9153354, lng: -87.6345494 },
   "the-tin-lizzie": { lat: 41.9277023, lng: -87.6415754 },
   "gaslight-bar-and-grille": { lat: 41.9261508, lng: -87.6588073 },
+  // Old Town batch (geocoded 2026-07-19 via Nominatim)
+  "corcorans-grill-pub": { lat: 41.9116012, lng: -87.6344370 },
+  "burton-place": { lat: 41.9090324, lng: -87.6343154 },
+  "the-fireplace-inn": { lat: 41.9090911, lng: -87.6349971 },
+  "declans-irish-pub": { lat: 41.9050672, lng: -87.6348536 },
+  "happy-camper-old-town": { lat: 41.9042068, lng: -87.6342984 },
+  "kamehachi-old-town": { lat: 41.9100639, lng: -87.6342270 },
+  "woodies-flat": { lat: 41.9102535, lng: -87.6339769 },
+  "the-rabbit-hole": { lat: 41.9041785, lng: -87.6347448 },
+  "kayao": { lat: 41.9054072, lng: -87.6348605 },
 };
 
 // Neighborhood centroids, for the quick-jump chips' flyTo target.
