@@ -86,16 +86,6 @@ export default async function GabbysCorner() {
           <WhiskeyGlass />
         </section>
 
-        {(!reviews || reviews.length === 0) && (
-          <div className="gabby-empty">
-            <div className="script-sub">the glass is poured…</div>
-            <p>
-              First reviews landing soon. Gabby is out doing very important
-              research.
-            </p>
-          </div>
-        )}
-
         {gabbyItems.length > 0 && (
           <ReviewCarousel items={gabbyItems} tone="maroon" />
         )}
