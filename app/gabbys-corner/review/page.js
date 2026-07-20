@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import CityChip from "../../city-chip";
+import MenuNav from "../../menu-nav";
 import { supabase } from "../../../lib/supabase";
 import { canTrim, getVideoDuration, trimVideo } from "../../../lib/trimVideo";
 
@@ -448,9 +450,8 @@ export default function ReviewWizard() {
             />
           </Link>
           <nav className="topnav">
-            <Link href="/gabbys-corner" className="gabby-link">
-              Gabby&apos;s Corner
-            </Link>
+            <CityChip />
+            <MenuNav />
           </nav>
         </div>
       </div>

@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../auth-context";
-import AuthChip from "../auth-chip";
+import CityChip from "../city-chip";
+import MenuNav from "../menu-nav";
 
 const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 
@@ -120,10 +121,8 @@ export default function ProfilePage() {
             />
           </Link>
           <nav className="topnav">
-            <Link href="/gabbys-corner" className="gabby-link">
-              Gabby&apos;s Corner
-            </Link>
-            <AuthChip />
+            <CityChip />
+            <MenuNav />
           </nav>
         </div>
       </div>

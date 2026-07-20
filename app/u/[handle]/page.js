@@ -5,7 +5,8 @@ import {
   getReviewsByProfile,
 } from "../../../lib/supabase";
 import ReviewCarousel from "../../review-carousel";
-import AuthChip from "../../auth-chip";
+import CityChip from "../../city-chip";
+import MenuNav from "../../menu-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -66,10 +67,8 @@ export default async function PublicProfile({ params }) {
             />
           </Link>
           <nav className="topnav">
-            <Link href="/gabbys-corner" className="gabby-link">
-              Gabby&apos;s Corner
-            </Link>
-            <AuthChip />
+            <CityChip />
+            <MenuNav />
           </nav>
         </div>
       </div>

@@ -875,7 +875,7 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   .rc-card { width: 82vw; }
 
   /* keep the Menu icon off the right edge on phones */
-  .topbar-inner { padding-right: 10px; }
+  .topbar-inner { padding-left: 10px; padding-right: 10px; }
 }
 
 /* ================= Map page ================= */
