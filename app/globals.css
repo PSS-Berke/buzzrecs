@@ -1054,3 +1054,47 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   .map-toolbar .pill { flex: 0 0 auto; }
   .map-list-item { padding: 11px 10px; font-size: 0.96rem; }
 }
+
+/* Reservation briefing (card back) */
+.res-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+.res-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.res-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  opacity: 0.9;
+}
+.res-blurb {
+  margin: 6px 0 4px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.res-tips {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.res-phone {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
