@@ -28,6 +28,7 @@ export async function GET() {
     },
     requestChecksumCalculation: "WHEN_REQUIRED",
     responseChecksumValidation: "WHEN_REQUIRED",
+    forcePathStyle: true,
   });
   const testUploadUrl = await getSignedUrl(
     s3,

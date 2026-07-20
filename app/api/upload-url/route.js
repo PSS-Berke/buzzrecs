@@ -96,6 +96,9 @@ export async function POST(req) {
     // into presigned URLs, which rejects real browser uploads.
     requestChecksumCalculation: "WHEN_REQUIRED",
     responseChecksumValidation: "WHEN_REQUIRED",
+    // Path-style URLs: R2's CORS policy matches these reliably;
+    // virtual-hosted style preflights don't pick up the bucket policy.
+    forcePathStyle: true,
   });
 
   const safe = filename.replace(/[^a-zA-Z0-9.\-_]/g, "_");
