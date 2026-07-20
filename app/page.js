@@ -27,6 +27,9 @@ export default async function Home() {
           </div>
           <nav className="topnav">
             <CityChip />
+            <Link href="/patios" className="map-link">
+              Patios
+            </Link>
             <Link href="/map" className="map-link">
               The Map
             </Link>

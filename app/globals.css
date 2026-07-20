@@ -1466,3 +1466,102 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 }
 .postas-pill:hover { transform: rotate(-1.5deg) scale(1.04); }
 .postas-pill.on { background: var(--maroon); color: var(--paper); border-color: var(--brass); }
+
+/* ==========================================================================
+   PATIOS — append to app/globals.css (uses existing tavern-chic tokens).
+   Reuses .filters/.pill/.card/.badge-now etc.; only new bits are below.
+   ========================================================================== */
+
+/* Secondary attribute filter row sits tighter under the neighborhood pills */
+.attr-filters {
+  margin-top: -0.35rem;
+  opacity: 0.95;
+}
+.pill.attr {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  border-style: dashed;
+}
+.pill.open-pill.active,
+.pill.live-pill.active {
+  background: var(--club);
+  color: var(--cream);
+  border-color: var(--club);
+}
+
+/* Off-season / season-window badge — brass counterpart to the green "Open now" */
+.badge-season {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brass);
+  border: 1.5px solid var(--brass);
+  border-radius: var(--wobble-2, 10px 12px 9px 11px);
+  padding: 0.12rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Headline patio-type line under the address */
+.patio-type-line {
+  font-family: var(--font-script);
+  color: var(--club);
+  font-size: 1.02rem;
+  margin: 0.15rem 0 0.35rem;
+}
+.patio-type-line .pt-best {
+  color: var(--brass);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.86rem;
+}
+
+/* Attribute tag chips on the front of the card */
+.patio-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.6rem;
+}
+.ptag {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--maroon-deep);
+  background: color-mix(in srgb, var(--brass-light) 26%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  border-radius: 999px;
+  padding: 0.14rem 0.55rem;
+  white-space: nowrap;
+}
+
+/* Spec grid on the flip side */
+.patio-spec {
+  margin: 0.6rem 0 0.75rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.patio-spec > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+  border-bottom: 1px solid color-mix(in srgb, var(--brass) 30%, transparent);
+  padding-bottom: 0.25rem;
+}
+.patio-spec dt {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin: 0;
+}
+.patio-spec dd {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--maroon-deep);
+}
