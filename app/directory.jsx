@@ -16,6 +16,18 @@ const HOOD_ORDER = [
 export default function Directory({ places }) {
   const [filter, setFilter] = useState("All");
   const [liveOnly, setLiveOnly] = useState(false);
+  const [flipped, setFlipped] = useState(() => new Set());
+
+  const toggleFlip = (id) =>
+    setFlipped((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
 
   const now = new Date();
   const withLive = useMemo(
@@ -103,58 +115,135 @@ export default function Directory({ places }) {
             <div className="grid">
               {spots.map((p) => {
                 const logo = getPlaceLogo(p.name);
+                const isFlipped = flipped.has(p.id);
+                const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  `${p.name} ${p.address || ""}`
+                )}`;
                 return (
-                <article className="card" key={p.id}>
-                  <div className="card-top">
-                    <div className="card-title-row">
-                      {logo && (
-                        <span className={`card-logo${logo.dark ? " dark" : ""}`}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={logo.src} alt="" />
-                        </span>
+                <article className={`card${isFlipped ? " flipped" : ""}`} key={p.id}>
+                  <div className="card-inner">
+                    <div className="card-face card-face-front">
+                      <div className="card-top">
+                        <div className="card-title-row">
+                          {logo && (
+                            <span className={`card-logo${logo.dark ? " dark" : ""}`}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={logo.src} alt="" />
+                            </span>
+                          )}
+                          <h3>
+                            <span className="no">No. {numberOf[p.id]}</span>
+                            {p.name}
+                          </h3>
+                        </div>
+                        {p.liveNow && (
+                          <span className="badge-now">
+                            <span className="dot" /> On now
+                          </span>
+                        )}
+                      </div>
+                      <div className="addr">{p.address}</div>
+                      {p.description && <p className="desc">{p.description}</p>}
+                      {(p.happy_hours || []).map((hh, i) => (
+                        <div className="hh" key={i}>
+                          <div className="when">
+                            <span className="days">{hh.days}</span> ·{" "}
+                            {formatTime(hh.start_time)}–{formatTime(hh.end_time)}
+                          </div>
+                          {hh.deals && <div className="deals">{hh.deals}</div>}
+                        </div>
+                      ))}
+                      <div className="links">
+                        {p.menu_url && (
+                          <a href={p.menu_url} target="_blank" rel="noreferrer">
+                            Menu
+                          </a>
+                        )}
+                        {p.reservation_url && (
+                          <a
+                            href={p.reservation_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Reserve
+                          </a>
+                        )}
+                        {p.website_url && (
+                          <a href={p.website_url} target="_blank" rel="noreferrer">
+                            Site
+                          </a>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="flip-trigger"
+                        onClick={() => toggleFlip(p.id)}
+                      >
+                        Full details →
+                      </button>
+                    </div>
+
+                    <div className="card-face card-face-back">
+                      <button
+                        type="button"
+                        className="flip-trigger back"
+                        onClick={() => toggleFlip(p.id)}
+                      >
+                        ← Back
+                      </button>
+                      {p.image_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.image_url} alt="" className="card-photo" />
                       )}
-                      <h3>
+                      <h3 className="card-back-title">
                         <span className="no">No. {numberOf[p.id]}</span>
                         {p.name}
                       </h3>
-                    </div>
-                    {p.liveNow && (
-                      <span className="badge-now">
-                        <span className="dot" /> On now
-                      </span>
-                    )}
-                  </div>
-                  <div className="addr">{p.address}</div>
-                  {p.description && <p className="desc">{p.description}</p>}
-                  {(p.happy_hours || []).map((hh, i) => (
-                    <div className="hh" key={i}>
-                      <div className="when">
-                        <span className="days">{hh.days}</span> ·{" "}
-                        {formatTime(hh.start_time)}–{formatTime(hh.end_time)}
-                      </div>
-                      {hh.deals && <div className="deals">{hh.deals}</div>}
-                    </div>
-                  ))}
-                  <div className="links">
-                    {p.menu_url && (
-                      <a href={p.menu_url} target="_blank" rel="noreferrer">
-                        Menu
-                      </a>
-                    )}
-                    {p.reservation_url && (
                       <a
-                        href={p.reservation_url}
+                        className="addr-link"
+                        href={directionsUrl}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        Reserve
+                        {p.address} · Get directions →
                       </a>
-                    )}
-                    {p.website_url && (
-                      <a href={p.website_url} target="_blank" rel="noreferrer">
-                        Site
-                      </a>
-                    )}
+                      {p.description && <p className="desc">{p.description}</p>}
+                      {(p.happy_hours || []).length > 0 && (
+                        <div className="back-hours">
+                          {p.happy_hours.map((hh, i) => (
+                            <div className="hh" key={i}>
+                              <div className="when">
+                                <span className="days">{hh.days}</span> ·{" "}
+                                {formatTime(hh.start_time)}–{formatTime(hh.end_time)}
+                              </div>
+                              {hh.deals && <div className="deals">{hh.deals}</div>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="back-links">
+                        {p.menu_url && (
+                          <a href={p.menu_url} target="_blank" rel="noreferrer" className="btn ghost">
+                            Menu
+                          </a>
+                        )}
+                        {p.reservation_url && (
+                          <a
+                            href={p.reservation_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn ghost"
+                          >
+                            Reserve
+                          </a>
+                        )}
+                        {p.website_url && (
+                          <a href={p.website_url} target="_blank" rel="noreferrer" className="btn ghost">
+                            Site
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </article>
                 );
