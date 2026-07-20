@@ -4,6 +4,7 @@
 // a tiny dropdown (sign out) when signed in. Drop into any .topnav.
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "./auth-context";
 
 export default function AuthChip() {
@@ -55,6 +56,13 @@ export default function AuthChip() {
       </button>
       {open && (
         <span className="auth-menu">
+          <Link
+            href="/profile"
+            className="auth-menu-item"
+            onClick={() => setOpen(false)}
+          >
+            my profile
+          </Link>
           <button
             type="button"
             className="auth-menu-item"

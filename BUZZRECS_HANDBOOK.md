@@ -278,6 +278,22 @@ it gets uploaded manually.
 - Next up (per buzzrecs-social-plan.md): /profile + /u/[handle] (Phase 2),
   unified feed + cheers/comments (Phase 3).
 
+## Profiles — 2026-07-19 (social chat, Phase 2)
+
+- **`/profile`** (client): edit display name, @handle, bio, avatar (uploads
+  to `review-media/avatars/{uid}-{ts}`); lists own `user_reviews` (any
+  status) with delete; sign-out. Signed-out visitors get a login prompt.
+- **`/u/[handle]`** (server, force-dynamic): public page — avatar, bio,
+  stats (pour count, avg /5, usual haunt = most-reviewed venue), live pours
+  via `getReviewsByProfile()`. 404s on unknown/invalid handles.
+- `lib/supabase.js`: `getProfileByHandle()`, `getReviewsByProfile()`;
+  `getUserReviews()` now also selects profiles handle + avatar_url.
+- Feed bylines on /gabbys-corner render as @handle linking to /u/[handle]
+  (`bylineHref` prop on ReviewCarousel items).
+- AuthChip menu now has "my profile" + "sign out".
+- CSS: profile/avatar/pour-row/u-stats/.rc-byline-link styles at the bottom
+  of globals.css. `.stack textarea` styled (bio field).
+
 ## Changelog
 
 - **2026-07-18 (later)** — Auth chat: Twilio Verify + Supabase phone auth

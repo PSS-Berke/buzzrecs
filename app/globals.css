@@ -887,10 +887,6 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   border-radius: 22px;
   box-shadow: 8px 8px 0 rgba(63, 90, 73, 0.45);
   padding: 14px 14px 6px;
-  /* Defensive containment: if the Leaflet map ever briefly mis-sizes
-     (e.g. mid-layout on load), keep it from bleeding onto the rest of
-     the page instead of just trusting the inner .map-viewport's clip. */
-  overflow: hidden;
 }
 
 .map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
@@ -1192,3 +1188,76 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   line-height: 1;
 }
 .sheet-close:hover { color: var(--maroon); transform: scale(1.15); }
+
+/* ---- Profile pages (/profile, /u/[handle]) ---- */
+.stack textarea {
+  font-family: var(--font-body), sans-serif;
+  font-size: 1rem;
+  color: var(--maroon-deep);
+  background: var(--cream);
+  border: 2px solid var(--maroon-deep);
+  border-radius: 10px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+.profile-avatar-row { display: flex; align-items: center; gap: 14px; }
+.profile-avatar-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--brass);
+  box-shadow: 3px 3px 0 var(--club);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.profile-avatar-empty {
+  font-family: var(--font-display), serif;
+  font-size: 1.6rem;
+  background: var(--maroon);
+  color: var(--paper);
+}
+.avatar-pick {
+  font-family: var(--font-script), cursive;
+  color: var(--club);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-underline-offset: 4px;
+}
+.pour-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--brass);
+}
+.pour-row:last-child { border-bottom: none; }
+.pour-meta { color: var(--maroon-deep); opacity: 0.8; font-size: 0.92rem; }
+.pour-delete { font-size: 0.88rem; }
+.u-hero .u-name { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.u-avatar { width: 84px; height: 84px; }
+.u-handle {
+  font-family: var(--font-script), cursive;
+  color: var(--club-light);
+  font-size: 1.15rem;
+  margin-top: 2px;
+}
+.u-stats {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: var(--maroon-deep);
+}
+.u-stats strong { color: var(--club); }
+.rc-byline-link {
+  text-decoration: underline;
+  text-decoration-color: var(--brass);
+  text-underline-offset: 3px;
+}
+.rc-byline-link:hover { color: var(--club); }

@@ -82,7 +82,14 @@ export default function ReviewCarousel({ items, tone = "maroon" }) {
               )}
               <div className="rc-title">{r.title}</div>
               {r.subtitle && <div className="rc-subtitle">{r.subtitle}</div>}
-              {r.byline && <div className="rc-byline">{r.byline}</div>}
+              {r.byline &&
+                (r.bylineHref ? (
+                  <a href={r.bylineHref} className="rc-byline rc-byline-link">
+                    {r.byline}
+                  </a>
+                ) : (
+                  <div className="rc-byline">{r.byline}</div>
+                ))}
               {(r.vibe != null || r.menu != null) && (
                 <div className="rc-sub-ratings">
                   {r.vibe != null && (

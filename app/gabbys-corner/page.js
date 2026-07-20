@@ -37,7 +37,10 @@ export default async function GabbysCorner() {
     subtitle: [r.places?.name ?? r.bar_text ?? "somewhere in Chicago", r.places?.neighborhood]
       .filter(Boolean)
       .join(" · "),
-    byline: r.profiles?.display_name || "Anonymous",
+    byline: r.profiles?.handle
+      ? `@${r.profiles.handle}`
+      : r.profiles?.display_name || "Anonymous",
+    bylineHref: r.profiles?.handle ? `/u/${r.profiles.handle}` : null,
     mediaType: r.menu_photo_url ? "image" : null,
     mediaUrl: r.menu_photo_url || null,
     rating: Number(r.rating),
