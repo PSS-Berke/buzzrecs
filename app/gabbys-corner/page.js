@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getUnifiedFeed } from "../../lib/supabase";
 import WhiskeyGlass from "../whiskey-glass";
 import SocialFeed from "../social-feed";
-import AuthChip from "../auth-chip";
 import CityChip from "../city-chip";
 import MenuNav from "../menu-nav";
 
@@ -33,7 +32,6 @@ export default async function GabbysCorner() {
           <nav className="topnav">
             <CityChip />
             <MenuNav />
-            <AuthChip />
           </nav>
         </div>
       </div>

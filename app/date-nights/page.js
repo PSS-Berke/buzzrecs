@@ -1,5 +1,4 @@
 import Link from "next/link";
-import AuthChip from "../auth-chip";
 import CityChip from "../city-chip";
 import MenuNav from "../menu-nav";
 
@@ -22,7 +21,6 @@ export default function DateNights() {
           <nav className="topnav">
             <CityChip />
             <MenuNav />
-            <AuthChip />
           </nav>
         </div>
       </div>

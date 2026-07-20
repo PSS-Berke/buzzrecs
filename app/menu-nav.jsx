@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "./auth-context";
 
 // Rec Lists shown in the dropdown. Add future lists here.
 const REC_LISTS = [
@@ -15,6 +16,7 @@ export default function MenuNav() {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const pathname = usePathname() || "/";
+  const auth = useAuth();
 
   useEffect(() => {
     if (!open) return;
@@ -34,6 +36,15 @@ export default function MenuNav() {
 
   const isHere = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const session = auth?.session;
+  const profile = auth?.profile;
+  const name = profile?.handle
+    ? `@${profile.handle}`
+    : profile?.display_name || "you";
+  const initial = (profile?.display_name || profile?.handle || "?")
+    .charAt(0)
+    .toUpperCase();
 
   return (
     <div className="menu-nav" ref={wrapRef}>
@@ -91,6 +102,62 @@ export default function MenuNav() {
               </Link>
             ))}
           </div>
+
+          {auth && (
+            <>
+              <div className="menu-rule" />
+              <div className="menu-sec">
+                <span className="menu-kick">Account</span>
+                {!session ? (
+                  <button
+                    type="button"
+                    className="menu-item menu-item-btn"
+                    onClick={() => {
+                      setOpen(false);
+                      auth.openLogin();
+                    }}
+                    role="menuitem"
+                  >
+                    Sign in
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      href="/profile"
+                      className={`menu-item${isHere("/profile") ? " here" : ""}`}
+                      onClick={() => setOpen(false)}
+                      role="menuitem"
+                    >
+                      <span className="menu-avatar" aria-hidden="true">
+                        {profile?.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={profile.avatar_url} alt="" />
+                        ) : (
+                          <span className="menu-initial">{initial}</span>
+                        )}
+                      </span>
+                      <span className="menu-me">
+                        My profile
+                        <span className="menu-handle">{name}</span>
+                      </span>
+                      {isHere("/profile") && <span className="menu-dot" />}
+                    </Link>
+                    <button
+                      type="button"
+                      className="menu-item menu-item-btn"
+                      onClick={() => {
+                        setOpen(false);
+                        auth.signOut();
+                      }}
+                      role="menuitem"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

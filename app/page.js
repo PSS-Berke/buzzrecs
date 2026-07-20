@@ -3,7 +3,6 @@ import { getPlacesWithHappyHours } from "../lib/supabase";
 import Directory from "./directory";
 import Carousel from "./carousel";
 import Splash from "./splash";
-import AuthChip from "./auth-chip";
 import CityChip from "./city-chip";
 import MenuNav from "./menu-nav";
 
@@ -29,7 +28,6 @@ export default async function Home() {
           <nav className="topnav">
             <CityChip />
             <MenuNav />
-            <AuthChip />
           </nav>
         </div>
       </div>

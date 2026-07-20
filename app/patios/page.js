@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getPlacesWithPatios } from "../../lib/supabase";
 import PatioDirectory from "./patio-directory";
 import Carousel from "../carousel";
-import AuthChip from "../auth-chip";
 import CityChip from "../city-chip";
 import MenuNav from "../menu-nav";
 
@@ -35,7 +34,6 @@ export default async function Patios() {
           <nav className="topnav">
             <CityChip />
             <MenuNav />
-            <AuthChip />
           </nav>
         </div>
       </div>
