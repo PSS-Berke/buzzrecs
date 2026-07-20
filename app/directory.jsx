@@ -12,6 +12,7 @@ const HOOD_ORDER = [
   "Old Town",
   "Lincoln Park",
   "The Loop",
+  "Lakeview",
 ];
 
 export default function Directory({ places }) {

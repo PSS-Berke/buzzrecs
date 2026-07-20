@@ -60,10 +60,10 @@
   numeric(3,1) 0–10, notes, video_url, posted_at.
 - RLS: public SELECT on all four (places filtered to approved). No anon
   writes. Writes happen via SQL editor (or service key server-side later).
-- Current data: 17 places across River North (6), West Loop (3), Old Town (3),
-  Gold Coast (2), Lincoln Park (2), The Loop (1). 7 have image_url (used by
-  carousel). Only these 6 neighborhoods are in scope — enforced in
-  `HOOD_ORDER` in `app/directory.jsx`.
+- Current data: 29 places across River North (6), West Loop (3), Old Town (3),
+  Gold Coast (2), Lincoln Park (2), The Loop (1), Lakeview (12). 9 have
+  image_url (used by carousel). Only these 7 neighborhoods are in scope —
+  enforced in `HOOD_ORDER` in `app/directory.jsx`.
 - `gabbys_reviews` is empty. Video plan: Supabase Storage bucket (not yet
   created) → public URL → `video_url`.
 
