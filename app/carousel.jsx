@@ -26,16 +26,6 @@ export default function Carousel({ slides }) {
         />
       ))}
       <div className="caption">{slides[i].name}</div>
-      <div className="dots">
-        {slides.map((s, idx) => (
-          <button
-            key={s.slug}
-            aria-label={`Show ${s.name}`}
-            className={idx === i ? "on" : ""}
-            onClick={() => setI(idx)}
-          />
-        ))}
-      </div>
     </div>
   );
 }
