@@ -876,7 +876,6 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 }
 
 /* ================= Map page ================= */
-.map-hero .back-link { margin-top: 16px; display: inline-block; }
 
 .map-layout {
   display: grid;
@@ -1021,8 +1020,8 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 .map-legend { display: flex; flex-direction: column; gap: 6px; }
 
 /* Neighborhood groups are <details>/<summary> -- collapsible so a 100+
-   spot list can be scanned as compact headers instead of one long scroll,
-   while still defaulting open (no behavior change unless you use it). */
+   spot list can be scanned as compact headers instead of one long scroll.
+   Default closed; tap a header to expand it. */
 .map-hood { border-bottom: 1px solid var(--brass); padding: 4px 0 10px; }
 .map-hood:last-child { border-bottom: none; }
 .map-hood summary {
@@ -1096,6 +1095,72 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   flex-shrink: 0;
 }
 .map-list-item.active .dot-live { background: var(--brass-light); }
+
+.map-site-footer {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+.map-back-link { margin-top: 0; font-size: 1.2rem; }
+.map-site-footer .footer-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+/* Happy Hours / Patios / Both filter -- placeholder glyphs for now, ready
+   to swap for the custom icon set later. */
+.map-mode-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 2px 2px 12px;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--maroon);
+  background: var(--cream-deep);
+  border: 2px solid var(--maroon);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.mode-btn:hover { transform: translateY(-1px); }
+.mode-btn .mode-icon { display: inline-flex; width: 16px; height: 16px; flex-shrink: 0; }
+.mode-btn.active { background: var(--maroon); color: var(--paper); }
+.mode-btn.active .mode-icon { color: var(--paper); }
+
+/* Small corner badge on the pin marking "this spot also has a patio",
+   independent of which number/live styling the main pin shows. */
+.map-pin-patio-badge { fill: var(--club); stroke: var(--paper); stroke-width: 1.5; }
+
+.map-callout .patio-block {
+  border-top: 1px dashed var(--brass);
+  padding-top: 10px;
+  margin-top: 2px;
+}
+.map-callout .patio-block .patio-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: var(--club);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+.map-callout .patio-block .patio-icon { width: 15px; height: 15px; display: inline-flex; }
 
 @media (max-width: 860px) {
   .map-layout { grid-template-columns: 1fr; gap: 20px; }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPlacesWithHappyHours } from "../../lib/supabase";
+import { getPlacesForMap } from "../../lib/supabase";
 import ChicagoMap from "./ChicagoMap";
 import CityChip from "../city-chip";
 import MenuNav from "../menu-nav";
@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "The Map — BuzzRecs",
   description:
-    "A stylized map of every BuzzRecs happy hour spot across River North, West Loop, Gold Coast, Old Town, Lincoln Park, the Loop, and Lakeview.",
+    "A stylized map of every BuzzRecs happy hour and patio spot across River North, West Loop, Gold Coast, Old Town, Lincoln Park, the Loop, and Lakeview.",
 };
 
 export default async function MapPage() {
-  const places = await getPlacesWithHappyHours();
+  const places = await getPlacesForMap();
 
   return (
     <>
@@ -39,9 +39,6 @@ export default async function MapPage() {
             West Loop, Gold Coast, Old Town, Lincoln Park, the Loop, and
             Lakeview.
           </p>
-          <Link href="/" className="back-link">
-            ← back to the happy hours
-          </Link>
         </header>
 
         {!places && (
@@ -53,11 +50,16 @@ export default async function MapPage() {
 
         {places && <ChicagoMap places={places} />}
 
-        <footer className="site">
-          <span>Hours and deals change — always confirm with the venue.</span>
-          <Link href="/beginning" className="fm">
-            Chicago is just the beginning…
+        <footer className="site map-site-footer">
+          <Link href="/" className="back-link map-back-link">
+            ← back to the happy hours
           </Link>
+          <div className="footer-row">
+            <span>Hours and deals change — always confirm with the venue.</span>
+            <Link href="/beginning" className="fm">
+              Chicago is just the beginning…
+            </Link>
+          </div>
         </footer>
       </main>
     </>
