@@ -74,6 +74,7 @@ export default function ChicagoMap({ places }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef({});
+  const resizeObserverRef = useRef(null);
 
   // Leaflet touches `window` at import time in some code paths, so it's
   // loaded dynamically inside an effect -- this only ever runs client-side,
@@ -114,10 +115,28 @@ export default function ChicagoMap({ places }) {
       });
 
       mapRef.current = map;
+
+      // Leaflet reads its container's pixel size once, synchronously, at
+      // construction time. If that happens before the CSS grid/aspect-ratio
+      // layout has fully settled (webfonts loading, sidebar content still
+      // reflowing, etc.), the map renders at the wrong size and -- since
+      // nothing else constrains it -- bleeds outside its rounded box. A
+      // ResizeObserver keeps it correctly sized for the container's actual,
+      // current dimensions at all times (including later window resizes).
+      requestAnimationFrame(() => map.invalidateSize());
+      if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => map.invalidateSize());
+        ro.observe(containerRef.current);
+        resizeObserverRef.current = ro;
+      }
     });
 
     return () => {
       cancelled = true;
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

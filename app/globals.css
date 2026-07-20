@@ -887,6 +887,10 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   border-radius: 22px;
   box-shadow: 8px 8px 0 rgba(63, 90, 73, 0.45);
   padding: 14px 14px 6px;
+  /* Defensive containment: if the Leaflet map ever briefly mis-sizes
+     (e.g. mid-layout on load), keep it from bleeding onto the rest of
+     the page instead of just trusting the inner .map-viewport's clip. */
+  overflow: hidden;
 }
 
 .map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
