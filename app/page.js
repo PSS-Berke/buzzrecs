@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { getPlacesWithHappyHours, getPlacesWithPatios } from "../lib/supabase";
+import { getPlacesWithHappyHours } from "../lib/supabase";
 import Directory from "./directory";
-import HomeBrowse from "./home-browse";
 import Carousel from "./carousel";
 import Splash from "./splash";
 import CityChip from "./city-chip";
@@ -11,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const places = await getPlacesWithHappyHours();
-  const patios = await getPlacesWithPatios();
   const slides = (places || []).filter((p) => p.image_url);
 
   return (
@@ -54,7 +52,7 @@ export default async function Home() {
           </p>
         )}
 
-        {places && <HomeBrowse happyPlaces={places} patioPlaces={patios} />}
+        {places && <Directory places={places} />}
 
         <footer className="site">
           <span>Hours and deals change — always confirm with the venue.</span>

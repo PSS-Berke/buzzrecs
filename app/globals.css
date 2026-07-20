@@ -1771,30 +1771,3 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 .menu-btn.open { filter: drop-shadow(0 0 0.5px var(--brass)); }
 .menu-mark { height: 40px; width: auto; display: block; overflow: visible; }
 .menu-btn.open .menu-mark { transform: rotate(-2deg); }
-
-/* ===== Home category switcher (Both / Happy Hour / Patio) ===== */
-.cat-switch {
-  display: flex; justify-content: center; flex-wrap: wrap;
-  gap: 0.85rem; margin: 0.4rem 0 1.5rem;
-}
-.cat-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-  min-width: 104px; padding: 0.8rem 1.1rem;
-  background: var(--paper); color: var(--maroon-deep);
-  border: 2px solid var(--brass); border-radius: 15px 12px 16px 13px;
-  box-shadow: 3px 3px 0 var(--brass);
-  font-family: var(--font-body); font-weight: 700; font-size: 0.92rem;
-  cursor: pointer;
-  transition: transform .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease;
-}
-.cat-btn:hover { transform: translateY(-2px) rotate(-0.5deg); }
-.cat-btn.active {
-  background: var(--club); border-color: var(--club); color: var(--cream);
-  box-shadow: 3px 3px 0 var(--brass-light);
-}
-.cat-ico { width: 40px; height: 40px; display: block; }
-.cat-sec-head {
-  font-family: var(--font-display); color: var(--maroon);
-  margin: 1.6rem 0 0.7rem; font-size: 1.5rem;
-}
-.cat-section + .cat-section { margin-top: 1.2rem; }
