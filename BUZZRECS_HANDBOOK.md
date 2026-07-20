@@ -60,10 +60,12 @@
   numeric(3,1) 0–10, notes, video_url, posted_at.
 - RLS: public SELECT on all four (places filtered to approved). No anon
   writes. Writes happen via SQL editor (or service key server-side later).
-- Current data: 29 places across River North (6), West Loop (3), Old Town (3),
-  Gold Coast (2), Lincoln Park (2), The Loop (1), Lakeview (12). 9 have
+- Current data: 34 places across River North (6), West Loop (3), Old Town (3),
+  Gold Coast (7), Lincoln Park (2), The Loop (1), Lakeview (12). 9 have
   image_url (used by carousel). Only these 7 neighborhoods are in scope —
-  enforced in `HOOD_ORDER` in `app/directory.jsx`.
+  enforced in `HOOD_ORDER` in `app/directory.jsx` **and separately** in
+  `app/map/ChicagoMap.jsx` / `app/map/page.js` (these three lists must be
+  kept in sync by hand — see "Adding a new spot" below).
 - `gabbys_reviews` is empty. Video plan: Supabase Storage bucket (not yet
   created) → public URL → `video_url`.
 
@@ -74,13 +76,21 @@ app/
   layout.js          fonts (next/font) + metadata
   globals.css        entire design system (no Tailwind)
   page.js            home: topbar, hero, carousel, directory
-  directory.jsx      client: filters, numbered cards, ON NOW logic
+  directory.jsx      client: filters, numbered cards, flip-card ON NOW logic
   carousel.jsx       client: crossfade hero carousel (4.2s)
   whiskey-glass.jsx  SVG crystal glass + orbiting twist animation
   gabbys-corner/page.js
+  map/
+    page.js          server: fetches places, renders ChicagoMap
+    ChicagoMap.jsx    client: Leaflet map, pins from coords.js PIN_COORDS
+    coords.js         PIN_COORDS (per-slug lat/lng) + ZONE_CENTERS (per-hood)
 lib/
   supabase.js        client (no-store fetch) + queries
   isHappyHourNow.js  Chicago-timezone day/time parsing ('Mon-Fri', 'Daily', 'Thu')
+  logos.js           PLACE_LOGOS — per-slug logo image + dark/light chip flag
+  reservationInfo.js RESERVATION_INFO — per-slug platform/url/blurb/tips/phone,
+                      merged onto DB rows at render via withReservationInfo()
+  happyHourQuips.js  100 splash-screen one-liners
 supabase/
   schema.sql, seed.sql   (historical — DB has since evolved; DB is truth)
 ```
@@ -137,12 +147,56 @@ numbered-menu tavern elegance).
 ## Data conventions
 
 - `days` strings the parser understands: `Daily`, ranges (`Mon-Fri`,
-  `Tue-Sat`, `Sun-Thu`), single days (`Thu`), comma lists (`Mon, Wed`).
+  `Tue-Sat`, `Sun-Thu`), single days (`Thu`), comma lists (`Mon, Wed`). Mixed
+  forms like `Mon, Wed-Fri` are NOT parsed as one string — split into two
+  separate `happy_hours` rows instead (see Felix, Le Petit Marcel, Figo Wine
+  Bar for examples).
 - Multiple happy_hours rows per place are supported (e.g., Maple & Ash Tower
   Hour + late night; The VIG has 3 rows).
-- New spots must use one of the 6 neighborhoods, spelled exactly:
+- New spots must use one of the 7 neighborhoods, spelled exactly:
   `River North`, `West Loop`, `Gold Coast`, `Old Town`, `Lincoln Park`,
-  `The Loop`.
+  `The Loop`, `Lakeview`.
+
+## Adding a new spot — the full checklist
+
+Data lives in **three separate places** that do not sync automatically. A
+spot only "fully" exists once all three (plus, optionally, a logo) are done.
+Skipping steps is how the map/reservations quietly fall behind the directory
+(happened to the Lakeview + Gold Coast batches added 2026-07-19/20 — map
+pins and reservation info had to be backfilled after the fact).
+
+1. **Research the spot.** Confirm: exact address, happy hour days/times,
+   deals (verbatim from the venue's own site when possible), website/menu
+   URL, a 1-sentence description in the site's voice. Cross-check against
+   2+ sources (venue's own site is source of truth for hours).
+2. **Insert into Supabase** (`places` + one-or-more `happy_hours` rows) via
+   the SQL editor — see "Deploy process" above for the browser-automation
+   method. `neighborhood` must exactly match one of the 7 values above; if
+   it's a brand-new neighborhood, also add it to `HOOD_ORDER` in
+   `app/directory.jsx` **and** `app/map/ChicagoMap.jsx`, plus a
+   `ZONE_CENTERS` entry in `app/map/coords.js`.
+3. **Research reservations** and add an entry to `RESERVATION_INFO` in
+   `lib/reservationInfo.js`, keyed by the place's `slug`: `platform` (Resy /
+   OpenTable / Tock / SevenRooms / Direct / "Walk-in only"), `url`, a short
+   `blurb` on how booking actually works (deposit? party-size caps? walk-in
+   policy?), 2-3 `tips`, and `phone`. If the venue is permanently closed, set
+   `{ closed: true }` instead — `withReservationInfo()` will drop it from the
+   directory entirely.
+4. **Geocode the address and add a map pin.** Query
+   `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=<address>`
+   (send a `User-Agent` header, ~1 req/sec) and add the returned lat/lng to
+   `PIN_COORDS` in `app/map/coords.js`, keyed by slug. Without this the spot
+   is silently omitted from `/map` — `ChicagoMap.jsx` filters to
+   `PIN_COORDS[p.slug]` and fails silent otherwise, no error.
+5. **Logo (optional but preferred).** If the venue has a clean transparent
+   logo mark, add it to `public/logos/` and register it in `lib/logos.js`
+   (`PLACE_LOGOS`, with `dark: true` if the mark is light-colored and needs a
+   dark chip behind it).
+6. **Build, commit, push, verify.** `git fetch && git rebase origin/main`
+   first (other chats push concurrently). One commit is fine for a batch of
+   spots. After deploy, check: the spot's card renders on `/` with correct
+   hours, the flip-card back shows the reservation briefing, and the pin
+   shows up on `/map` in the right neighborhood cluster.
 
 ## Phone OTP auth & community tables (Auth chat — merged addendum 2026-07-18)
 

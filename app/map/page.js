@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "The Map — BuzzRecs",
   description:
-    "A stylized map of every BuzzRecs happy hour spot across River North, West Loop, Gold Coast, Old Town, Lincoln Park, and the Loop.",
+    "A stylized map of every BuzzRecs happy hour spot across River North, West Loop, Gold Coast, Old Town, Lincoln Park, the Loop, and Lakeview.",
 };
 
 export default async function MapPage() {
@@ -36,7 +36,8 @@ export default async function MapPage() {
           <h1>The lay of the land.</h1>
           <p className="dek">
             Every spot on BuzzRecs, painted onto one tavern map — River North,
-            West Loop, Gold Coast, Old Town, Lincoln Park, and the Loop.
+            West Loop, Gold Coast, Old Town, Lincoln Park, the Loop, and
+            Lakeview.
           </p>
           <Link href="/" className="back-link">
             ← back to the happy hours

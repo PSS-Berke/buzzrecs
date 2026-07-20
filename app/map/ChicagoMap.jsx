@@ -12,6 +12,7 @@ const HOOD_ORDER = [
   "Old Town",
   "Lincoln Park",
   "The Loop",
+  "Lakeview",
 ];
 
 const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
