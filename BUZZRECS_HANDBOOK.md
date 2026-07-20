@@ -250,7 +250,9 @@ it gets uploaded manually.
 
 - [x] Phone OTP auth — SHIPPED by auth chat (Twilio Verify)
 - [x] Storage bucket + Gabby upload page — SHIPPED by design chat
-- [ ] Flip is_admin for Gabby + Berke after their first phone login
+- [x] Admin policy (Berke, 2026-07-19): @buzz (Berke) is the ONLY admin, by
+  design — he posts either as himself or 'as Gabby's Corner' via the wizard's
+  post-as toggle. Do NOT flip is_admin for anyone else without Berke's say-so.
 - [ ] Gabby's first review
 - [ ] Community review form/feed on /gabbys-corner (auth chat)
 - [ ] Wire circle logo marks into site UI
