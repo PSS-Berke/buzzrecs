@@ -5,12 +5,49 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth-context";
 
-// Rec Lists shown in the dropdown. Add future lists here.
 const REC_LISTS = [
   { href: "/", label: "Happy Hours", note: null },
   { href: "/patios", label: "Patios", note: null },
   { href: "/date-nights", label: "Date Nights", note: "soon" },
 ];
+
+// Little tavern menu-card mark. Inline SVG so it can use the page's script
+// font (--font-script / Kaushan) and palette vars; transparent, crisp at any
+// size. Swap this out if a raster icon lands in /public later.
+function MenuMark() {
+  return (
+    <svg className="menu-mark" viewBox="0 0 52 58" aria-hidden="true">
+      <g transform="rotate(-5 26 30)">
+        {/* back sheet peeking behind */}
+        <rect x="15" y="9" width="28" height="41" rx="2.5"
+              fill="#fcf7ea" stroke="#b08a3e" strokeWidth="1.1" opacity="0.75" />
+        {/* front sheet */}
+        <rect x="9" y="6" width="29" height="44" rx="2.5"
+              fill="#fcf7ea" stroke="#b08a3e" strokeWidth="1.6" />
+        {/* tack holes */}
+        <circle cx="14.5" cy="11" r="1" fill="#b08a3e" />
+        <circle cx="32.5" cy="11" r="1" fill="#b08a3e" />
+        {/* script heading */}
+        <text x="23.5" y="22" textAnchor="middle" fontSize="12"
+              style={{ fontFamily: "var(--font-script), cursive" }}
+              fill="#5e2634">Menu</text>
+        {/* underline swash */}
+        <path d="M13 25 Q23.5 29 34 25" fill="none"
+              stroke="#b08a3e" strokeWidth="1.1" strokeLinecap="round" />
+        {/* list rows */}
+        <path d="M13 31 l1.6 -1.6 1.6 1.6 -1.6 1.6 z" fill="#b08a3e" />
+        <line x1="18" y1="31" x2="33" y2="31" stroke="#b08a3e" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+        <circle cx="14.6" cy="37" r="1.5" fill="#b08a3e" />
+        <line x1="18" y1="37" x2="33" y2="37" stroke="#b08a3e" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+        <circle cx="14.6" cy="43" r="1.5" fill="#b08a3e" />
+        <line x1="18" y1="43" x2="30" y2="43" stroke="#b08a3e" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+      </g>
+      {/* sparkles */}
+      <path d="M43 9 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1 z" fill="#d4af6a" />
+      <path d="M9 46 l0.8 2.4 2.4 0.8 -2.4 0.8 -0.8 2.4 -0.8 -2.4 -2.4 -0.8 2.4 -0.8 z" fill="#d4af6a" />
+    </svg>
+  );
+}
 
 export default function MenuNav() {
   const [open, setOpen] = useState(false);
@@ -53,17 +90,10 @@ export default function MenuNav() {
         className={`menu-btn${open ? " open" : ""}`}
         aria-expanded={open}
         aria-haspopup="true"
+        aria-label="Menu"
         onClick={() => setOpen((o) => !o)}
       >
-        {/* PLACEHOLDER icon — replace this <span.menu-glyph> with
-            <img src="/menu-icon.svg" alt="" className="menu-glyph-img" />
-            once Berke's icon is dropped into public/. */}
-        <span className="menu-glyph" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </span>
-        <span className="menu-btn-label">Menu</span>
+        <MenuMark />
       </button>
 
       {open && (

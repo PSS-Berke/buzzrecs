@@ -1636,25 +1636,6 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
    Comprehensive menu dropdown (MenuNav) — tavern-chic tokens.
    ========================================================================== */
 .menu-nav { position: relative; display: inline-flex; }
-.menu-btn {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  font-family: var(--font-body); font-weight: 700; font-size: 0.9rem;
-  color: var(--maroon-deep); background: var(--paper);
-  border: 2px solid var(--maroon);
-  border-radius: var(--wobble, 12px 10px 13px 11px);
-  padding: 0.4rem 0.85rem; cursor: pointer;
-  box-shadow: 2px 2px 0 var(--brass);
-  transition: transform .12s ease, background .12s ease, color .12s ease;
-}
-.menu-btn:hover { transform: translateY(-1px); }
-.menu-btn.open { background: var(--club); color: var(--cream); border-color: var(--club); }
-.menu-glyph { display: inline-flex; flex-direction: column; gap: 3px; width: 18px; }
-.menu-glyph span { height: 2px; border-radius: 2px; background: currentColor; display: block; }
-.menu-glyph span:nth-child(1){ width: 18px; }
-.menu-glyph span:nth-child(2){ width: 12px; }
-.menu-glyph span:nth-child(3){ width: 16px; }
-.menu-glyph-img { width: 20px; height: 20px; object-fit: contain; }
-.menu-btn-label { letter-spacing: .02em; }
 
 .menu-pop {
   position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
@@ -1715,3 +1696,13 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   font-family: var(--font-body); font-weight: 600; font-size: 0.72rem;
   color: var(--brass);
 }
+
+.menu-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: none; padding: 2px; cursor: pointer;
+  border-radius: 10px; transition: transform .12s ease, filter .12s ease;
+}
+.menu-btn:hover { transform: translateY(-1px) rotate(1.5deg); }
+.menu-btn.open { filter: drop-shadow(0 0 0.5px var(--brass)); }
+.menu-mark { height: 40px; width: auto; display: block; overflow: visible; }
+.menu-btn.open .menu-mark { transform: rotate(-2deg); }
