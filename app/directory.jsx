@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { isHappyHourNow, formatTime } from "../lib/isHappyHourNow";
 import { getPlaceLogo } from "../lib/logos";
+import { withReservationInfo } from "../lib/reservationInfo";
 
 const HOOD_ORDER = [
   "River North",
@@ -32,10 +33,13 @@ export default function Directory({ places }) {
   const now = new Date();
   const withLive = useMemo(
     () =>
-      (places || []).map((p) => ({
-        ...p,
-        liveNow: (p.happy_hours || []).some((hh) => isHappyHourNow(hh, now)),
-      })),
+      (places || [])
+        .map(withReservationInfo)
+        .filter(Boolean)
+        .map((p) => ({
+          ...p,
+          liveNow: (p.happy_hours || []).some((hh) => isHappyHourNow(hh, now)),
+        })),
     [places]
   );
 
@@ -219,6 +223,27 @@ export default function Directory({ places }) {
                               {hh.deals && <div className="deals">{hh.deals}</div>}
                             </div>
                           ))}
+                        </div>
+                      )}
+                      {(p.reservation_notes || p.reservation_platform) && (
+                        <div className="res-info">
+                          <div className="res-head">
+                            Reservations
+                            {p.reservation_platform && (
+                              <span className="res-badge">{p.reservation_platform}</span>
+                            )}
+                          </div>
+                          {p.reservation_notes && (
+                            <p className="res-blurb">{p.reservation_notes}</p>
+                          )}
+                          {(p.reservation_tips || []).length > 0 && (
+                            <ul className="res-tips">
+                              {p.reservation_tips.map((t, i) => (
+                                <li key={i}>{t}</li>
+                              ))}
+                            </ul>
+                          )}
+                          {p.phone && <div className="res-phone">☎ {p.phone}</div>}
                         </div>
                       )}
                       <div className="back-links">
