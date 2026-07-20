@@ -42,6 +42,7 @@ export default function ReviewWizard() {
   const [places, setPlaces] = useState([]);
   const [query, setQuery] = useState("");
   const [picked, setPicked] = useState(null); // {id,name} or {custom:true,name}
+  const [location, setLocation] = useState("");
 
   // post
   const [body, setBody] = useState("");
@@ -221,18 +222,38 @@ export default function ReviewWizard() {
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
+  // Races a promise against a size-scaled time budget so a stalled upload
+  // fails with a clear message instead of leaving "Pouring…" spinning
+  // forever — this is the main fix for submissions that used to just hang.
+  function withTimeout(promise, ms, message) {
+    let timer;
+    const timeout = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(message)), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+  }
+
   async function uploadTo(bucket, file) {
     const safe = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
     const path = `${Date.now()}-${safe}`;
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(path, file, { contentType: file.type || undefined });
+    // Min 30s, ~3.5s/MB — generous even on a slow mobile connection.
+    const budgetMs = Math.max(30_000, (file.size / (1024 * 1024)) * 3500);
+    const { error } = await withTimeout(
+      supabase.storage
+        .from(bucket)
+        .upload(path, file, { contentType: file.type || undefined }),
+      budgetMs,
+      "Upload is taking too long — check your connection and try again."
+    );
     if (error) throw error;
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   }
 
   // Tries R2 (presigned direct upload) first; on any failure falls back
   // to Supabase storage, which fits because the clip stage caps size.
+  // R2 has been unreliable from the browser (CORS) — the PUT is given a
+  // short leash so a hung/rejected request fails fast and the reliable
+  // Supabase fallback kicks in quickly instead of the submission stalling.
   const SUPA_LIMIT = 48 * 1024 * 1024;
   async function uploadVideo(file) {
     const { data } = await supabase.auth.getSession();
@@ -252,15 +273,25 @@ export default function ReviewWizard() {
       });
       if (!res.ok) throw new Error("presign unavailable");
       const { uploadUrl, publicUrl } = await res.json();
-      const put = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type || "video/mp4" },
-        body: file,
-      });
-      if (!put.ok) throw new Error("R2 rejected the upload");
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15_000);
+      let put;
+      try {
+        put = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "video/mp4" },
+          body: file,
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timer);
+      }
+      if (!put.ok) throw new Error(`R2 rejected the upload (${put.status})`);
       return publicUrl;
-    } catch {
+    } catch (e) {
       // R2 unavailable (config or CORS) — Supabase handles clips ≤ ~48 MB
+      console.warn("R2 upload failed, falling back to Supabase storage:", e);
       if (file.size > SUPA_LIMIT)
         throw new Error(
           "Upload service hiccuped and this clip is too big for the backup route — trim it a bit shorter and try again."
@@ -269,10 +300,28 @@ export default function ReviewWizard() {
     }
   }
 
+  const wakeLockRef = useRef(null);
+  async function acquireWakeLock() {
+    try {
+      if ("wakeLock" in navigator) {
+        wakeLockRef.current = await navigator.wakeLock.request("screen");
+      }
+    } catch {
+      // Best-effort — some browsers restrict this silently; not fatal.
+      // Without it, a screen lock mid-trim/upload can pause the <video>
+      // element and stall the whole submission on longer clips.
+    }
+  }
+  function releaseWakeLock() {
+    wakeLockRef.current?.release().catch(() => {});
+    wakeLockRef.current = null;
+  }
+
   async function submit(e) {
     e.preventDefault();
     setErr("");
     setBusy(true);
+    await acquireWakeLock();
     try {
       let videoUrl = null;
       let menuUrl = null;
@@ -304,6 +353,7 @@ export default function ReviewWizard() {
       const common = {
         place_id: picked.custom ? null : picked.id,
         bar_text: picked.custom ? picked.name : null,
+        location: location.trim() || null,
         whiskey_name: whiskey.trim(),
         rating: score,
         rating_vibe: vibe,
@@ -336,6 +386,7 @@ export default function ReviewWizard() {
     } finally {
       setBusy(false);
       setBusyMsg("");
+      releaseWakeLock();
     }
   }
 
@@ -593,6 +644,13 @@ export default function ReviewWizard() {
                                 will upload as-is (must be under ~48 MB).
                               </p>
                             )}
+                            {clipLen > 15 && (
+                              <p className="empty">
+                                Longer clips take a minute or two to process —
+                                keep this tab open and your screen on until it
+                                posts.
+                              </p>
+                            )}
                           </>
                         )}
                         <div style={mediaActionsStyle}>
@@ -707,6 +765,12 @@ export default function ReviewWizard() {
                     {picked.custom ? " (new spot)" : ""}
                   </p>
                 )}
+                <label>Location (optional)</label>
+                <input
+                  placeholder="e.g. at the bar, patio, upstairs"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
                 {!picked && query.trim() && (
                   <div className="stack" style={{ gap: 6 }}>
                     {matches.map((p) => (
@@ -758,8 +822,9 @@ export default function ReviewWizard() {
                   </>
                 )}
                 <p className="empty">
-                  {whiskey || "—"} · {picked?.name || "—"} · {score ?? "—"}/
-                  {max}
+                  {whiskey || "—"} · {picked?.name || "—"}
+                  {location.trim() ? ` (${location.trim()})` : ""} ·{" "}
+                  {score ?? "—"}/{max}
                   {vibe != null ? ` · vibe ${vibe}` : ""}
                   {menuScore != null ? ` · menu ${menuScore}` : ""}
                 </p>
@@ -776,12 +841,12 @@ export default function ReviewWizard() {
                     setStep((s) => s - 1);
                   }}
                 >
-                  ← Back
+                  Back
                 </button>
               )}
               {step < STEPS.length - 1 && (
                 <button type="button" className="btn" onClick={next}>
-                  Next →
+                  Next
                 </button>
               )}
               {step === STEPS.length - 1 && (
