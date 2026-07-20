@@ -56,7 +56,9 @@ export default async function Home() {
 
         <footer className="site">
           <span>Hours and deals change — always confirm with the venue.</span>
-          <span className="fm">Chicago is just the beginning…</span>
+          <Link href="/beginning" className="fm">
+            Chicago is just the beginning…
+          </Link>
         </footer>
 
         <div className="bottom-gabby">

@@ -471,6 +471,24 @@ footer.site {
   gap: 12px;
 }
 footer.site .fm { font-family: var(--font-script), cursive; font-size: 1.05rem; color: var(--club-light); }
+a.fm { display: inline-block; transition: transform 0.15s ease, color 0.15s ease; }
+a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
+
+/* ---- The Beginning (easter egg) ---- */
+.beginning { min-height: 100vh; }
+.corner-crest {
+  position: fixed;
+  right: 20px;
+  bottom: 12px;
+  width: 320px;
+  height: 340px;
+  display: block;
+  transform: scale(0.6);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease;
+  cursor: pointer;
+}
+.corner-crest:hover { transform: scale(0.68) rotate(-2deg); }
 
 .bottom-gabby {
   display: flex;
