@@ -40,6 +40,27 @@ export const PIN_COORDS = {
   "mia-francesca-lakeview": { lat: 41.9421793, lng: -87.6521992 },
   "sheffields-beer-garden": { lat: 41.9416050, lng: -87.6545104 },
   "swift-tavern-wrigleyville": { lat: 41.9473681, lng: -87.6568915 },
+  // The Loop batch (geocoded 2026-07-19 via Nominatim)
+  "the-gage": { lat: 41.8813403, lng: -87.6249525 },
+  "acanto": { lat: 41.8814550, lng: -87.6249538 },
+  "the-dearborn": { lat: 41.8842027, lng: -87.6292577 },
+  "petterinos": { lat: 41.8846009, lng: -87.6296591 },
+  "the-roanoke": { lat: 41.8818507, lng: -87.6320733 },
+  "venteux": { lat: 41.8864786, lng: -87.6247946 },
+  "land-and-lake-kitchen": { lat: 41.8877725, lng: -87.6254990 },
+  "beatrix-loop": { lat: 41.8848667, lng: -87.6363214 },
+  "sushi-san-willis-tower": { lat: 41.8787380, lng: -87.6359612 },
+  "boleo": { lat: 41.8808447, lng: -87.6317483 },
+  "remingtons": { lat: 41.8826638, lng: -87.6249881 },
+  "the-village-italian-village": { lat: 41.8803853, lng: -87.6301509 },
+  "the-grillroom-chophouse": { lat: 41.8802657, lng: -87.6288269 },
+  "elephant-and-castle-adams": { lat: 41.8793175, lng: -87.6313222 },
+  "elephant-and-castle-wabash": { lat: 41.8854904, lng: -87.6258846 },
+  "acebounce": { lat: 41.8865115, lng: -87.6311851 },
+  "roof-on-thewit": { lat: 41.8864262, lng: -87.6280661 },
+  "about-last-knife": { lat: 41.8850130, lng: -87.6245900 },
+  "flight-club-chicago": { lat: 41.8865050, lng: -87.6314551 },
+  "90th-meridian": { lat: 41.8785780, lng: -87.6318352 },
 };
 
 // Neighborhood centroids, for the quick-jump chips' flyTo target.
