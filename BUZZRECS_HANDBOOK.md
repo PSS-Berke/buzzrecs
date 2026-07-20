@@ -238,3 +238,8 @@ it gets uploaded manually.
 - Videos >50MB exceed Supabase free storage cap → moving to Cloudflare R2 (free 10GB, zero egress). POST /api/upload-url (admin JWT required) presigns a direct browser→R2 PUT; public URL stored in video_url. Falls back to gabby-videos bucket (50MB warning) until R2 env vars exist.
 - Vercel env vars (server-only, set in dashboard — NOT .env.production): R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_BASE_URL.
 - Deps: @aws-sdk/client-s3, @aws-sdk/s3-request-presigner.
+
+### Clip stage + upload fallback — 2026-07-19 (auth chat)
+
+- Wizard media step now has an Instagram-style clip stage (lib/trimVideo.js): preview + start/end sliders, 90s cap, canvas+MediaRecorder re-encode at ~3.5Mbps/720-1280 → clips land ≈40-45MB. No wasm.
+- uploadVideo tries R2 presigned PUT first, falls back to Supabase gabby-videos on ANY failure (fits post-trim). KNOWN ISSUE: browser PUT to R2 S3 endpoint fails CORS-style in Chrome+Safari even though preflight replays clean server-side (checksums disabled + path-style already applied). /api/cors-probe is a temp diagnostic endpoint — remove when solved.

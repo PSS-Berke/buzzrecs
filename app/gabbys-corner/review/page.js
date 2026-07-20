@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
+import { canTrim, getVideoDuration, trimVideo } from "../../../lib/trimVideo";
 
 const STEPS = ["media", "rate", "spot", "post"];
+const MAX_CLIP_SECONDS = 90;
 
 export default function ReviewWizard() {
   const [session, setSession] = useState(null);
@@ -21,6 +23,14 @@ export default function ReviewWizard() {
   const [video, setVideo] = useState(null);
   const [menuPic, setMenuPic] = useState(null);
   const [menuPicPreview, setMenuPicPreview] = useState(null);
+
+  // trim stage
+  const [videoURL, setVideoURL] = useState(null);
+  const [duration, setDuration] = useState(0);
+  const [trimStart, setTrimStart] = useState(0);
+  const [trimEnd, setTrimEnd] = useState(0);
+  const [busyMsg, setBusyMsg] = useState("");
+  const previewRef = useRef(null);
 
   // ratings + whiskey
   const [whiskey, setWhiskey] = useState("");
@@ -74,6 +84,50 @@ export default function ReviewWizard() {
     setMenuPicPreview(url);
     return () => URL.revokeObjectURL(url);
   }, [menuPic]);
+
+  useEffect(() => {
+    if (!video) {
+      setVideoURL(null);
+      setDuration(0);
+      setTrimStart(0);
+      setTrimEnd(0);
+      return;
+    }
+    const url = URL.createObjectURL(video);
+    setVideoURL(url);
+    getVideoDuration(video)
+      .then((d) => {
+        setDuration(d);
+        setTrimStart(0);
+        setTrimEnd(Math.min(d, MAX_CLIP_SECONDS));
+      })
+      .catch(() => setErr("Couldn't read that video — try a different file."));
+    return () => URL.revokeObjectURL(url);
+  }, [video]);
+
+  // Keep the preview player inside the selected range
+  useEffect(() => {
+    const v = previewRef.current;
+    if (!v) return;
+    const clamp = () => {
+      if (v.currentTime < trimStart - 0.3 || v.currentTime > trimEnd)
+        v.currentTime = trimStart;
+    };
+    v.addEventListener("timeupdate", clamp);
+    return () => v.removeEventListener("timeupdate", clamp);
+  }, [trimStart, trimEnd, videoURL]);
+
+  const fmt = (s) =>
+    `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  const clipLen = Math.max(0, trimEnd - trimStart);
+  // Every video goes through the clip stage (normalizes size + codec);
+  // only skipped when the browser can't process video at all.
+  const needsTrim = duration > 0 && canTrim();
+  const estMB = needsTrim
+    ? ((3_500_000 + 128_000) / 8 / 1024 / 1024) * clipLen
+    : video
+    ? video.size / 1024 / 1024
+    : 0;
 
   useEffect(() => {
     setScore((s) => (s == null ? null : Math.min(Math.max(s, min), max)));
@@ -131,6 +185,12 @@ export default function ReviewWizard() {
     setErr("");
     if (step === 0 && isAdmin && !video)
       return setErr("Pick the video first — that's the review.");
+    if (step === 0 && video && clipLen > MAX_CLIP_SECONDS)
+      return setErr(
+        `Clips max out at ${MAX_CLIP_SECONDS} seconds — tighten the trim.`
+      );
+    if (step === 0 && video && clipLen < 1)
+      return setErr("That clip is under a second — widen the trim.");
     if (step === 1) {
       if (!whiskey.trim()) return setErr("Name the whiskey.");
       if (score == null) return setErr("Give it a score.");
@@ -149,42 +209,42 @@ export default function ReviewWizard() {
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   }
 
-  // Big videos go straight to R2 via a presigned URL; falls back to
-  // Supabase storage (50 MB cap) if R2 isn't configured yet.
+  // Tries R2 (presigned direct upload) first; on any failure falls back
+  // to Supabase storage, which fits because the clip stage caps size.
+  const SUPA_LIMIT = 48 * 1024 * 1024;
   async function uploadVideo(file) {
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    const res = await fetch("/api/upload-url", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        filename: file.name,
-        contentType: file.type || "video/mp4",
-        size: file.size,
-      }),
-    });
-    if (res.status === 501) {
-      if (file.size > 50 * 1024 * 1024)
+    try {
+      const res = await fetch("/api/upload-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || "video/mp4",
+          size: file.size,
+        }),
+      });
+      if (!res.ok) throw new Error("presign unavailable");
+      const { uploadUrl, publicUrl } = await res.json();
+      const put = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "video/mp4" },
+        body: file,
+      });
+      if (!put.ok) throw new Error("R2 rejected the upload");
+      return publicUrl;
+    } catch {
+      // R2 unavailable (config or CORS) — Supabase handles clips ≤ ~48 MB
+      if (file.size > SUPA_LIMIT)
         throw new Error(
-          "Video hosting is still being set up — for now keep it under 50 MB (about 45 seconds at 720p)."
+          "Upload service hiccuped and this clip is too big for the backup route — trim it a bit shorter and try again."
         );
       return uploadTo("gabby-videos", file);
     }
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      throw new Error(j.error || "Could not start the upload.");
-    }
-    const { uploadUrl, publicUrl } = await res.json();
-    const put = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: { "Content-Type": file.type || "video/mp4" },
-      body: file,
-    });
-    if (!put.ok) throw new Error("Video upload failed — try again.");
-    return publicUrl;
   }
 
   async function submit(e) {
@@ -194,7 +254,22 @@ export default function ReviewWizard() {
     try {
       let videoUrl = null;
       let menuUrl = null;
-      if (isAdmin && video) videoUrl = await uploadVideo(video);
+      if (isAdmin && video) {
+        let toUpload = video;
+        if (needsTrim && canTrim()) {
+          setBusyMsg("Trimming the clip…");
+          const { blob, ext, mimeType } = await trimVideo(
+            video,
+            trimStart,
+            trimEnd,
+            (p) => setBusyMsg(`Trimming the clip… ${Math.round(p * 100)}%`)
+          );
+          toUpload = new File([blob], `clip.${ext}`, { type: mimeType });
+        }
+        setBusyMsg("Uploading the video…");
+        videoUrl = await uploadVideo(toUpload);
+        setBusyMsg("");
+      }
       if (menuPic) menuUrl = await uploadTo("review-media", menuPic);
 
       if (displayName.trim()) {
@@ -238,6 +313,7 @@ export default function ReviewWizard() {
       );
     } finally {
       setBusy(false);
+      setBusyMsg("");
     }
   }
 
@@ -404,7 +480,82 @@ export default function ReviewWizard() {
                       accept="video/*"
                       onChange={(e) => setVideo(e.target.files?.[0] || null)}
                     />
-                    {video && <p className="empty">🎬 {video.name}</p>}
+                    {video && videoURL && (
+                      <div className="stack" style={{ gap: 8 }}>
+                        <video
+                          ref={previewRef}
+                          src={videoURL}
+                          controls
+                          playsInline
+                          preload="metadata"
+                          style={{
+                            maxWidth: 320,
+                            width: "100%",
+                            borderRadius: 10,
+                            border: "2px solid var(--maroon-deep)",
+                          }}
+                        />
+                        {duration > 0 && (
+                          <>
+                            <label>
+                              Clip: {fmt(trimStart)} – {fmt(trimEnd)}{" "}
+                              <strong className="score-echo">
+                                ({Math.round(clipLen)}s)
+                              </strong>{" "}
+                              · ~{estMB.toFixed(0)} MB
+                              {clipLen > MAX_CLIP_SECONDS
+                                ? ` — max ${MAX_CLIP_SECONDS}s`
+                                : ""}
+                            </label>
+                            <label style={{ fontWeight: "normal" }}>
+                              Start
+                            </label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={duration}
+                              step={0.5}
+                              value={trimStart}
+                              onChange={(e) => {
+                                const v = Math.min(
+                                  Number(e.target.value),
+                                  trimEnd - 1
+                                );
+                                setTrimStart(Math.max(0, v));
+                                if (previewRef.current)
+                                  previewRef.current.currentTime = v;
+                              }}
+                            />
+                            <label style={{ fontWeight: "normal" }}>End</label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={duration}
+                              step={0.5}
+                              value={trimEnd}
+                              onChange={(e) => {
+                                const v = Math.max(
+                                  Number(e.target.value),
+                                  trimStart + 1
+                                );
+                                setTrimEnd(Math.min(duration, v));
+                                if (previewRef.current)
+                                  previewRef.current.currentTime = Math.max(
+                                    trimStart,
+                                    v - 2
+                                  );
+                              }}
+                            />
+                            {!canTrim() && (
+                              <p className="form-err">
+                                This browser can&apos;t trim — the full video
+                                will upload as-is (must be under ~48 MB).
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </>
                 )}
                 <label>
@@ -541,7 +692,7 @@ export default function ReviewWizard() {
               )}
               {step === STEPS.length - 1 && (
                 <button disabled={busy} className="btn">
-                  {busy ? "Pouring…" : "Post the review"}
+                  {busy ? busyMsg || "Pouring…" : "Post the review"}
                 </button>
               )}
             </div>

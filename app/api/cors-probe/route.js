@@ -4,6 +4,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Temporary diagnostic: replays the browser's CORS preflight against R2
 // server-side so we can read the response headers. Remove after debugging.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const url = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${process.env.R2_BUCKET}/probe`;
   const res = await fetch(url, {
