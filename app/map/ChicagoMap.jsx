@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isHappyHourNow, formatTime } from "../../lib/isHappyHourNow";
 import { isPatioOpenNow, seasonLabel } from "../../lib/isPatioOpenNow";
 import { PIN_COORDS, ZONE_CENTERS, CITY_VIEW } from "./coords";
+import { CatIcon } from "../cat-icons";
 
 const HOOD_ORDER = [
   "River North",
@@ -23,35 +24,10 @@ const TILE_ATTRIBUTION =
 // Happy Hours / Patios / Both -- placeholder glyphs, swapped for the real
 // icon set once it's handed off.
 const MODES = [
-  { key: "happy-hours", label: "Happy Hours" },
-  { key: "patios", label: "Patios" },
   { key: "both", label: "Both" },
+  { key: "happy-hours", label: "Happy Hour" },
+  { key: "patios", label: "Patio" },
 ];
-
-function ModeIcon({ mode }) {
-  if (mode === "happy-hours") {
-    return (
-      <svg className="mode-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-        <path d="M3 2h10l-4.3 5.2v4.3h2.1V13H5.2v-1.5h2.1V7.2Z" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (mode === "patios") {
-    return (
-      <svg className="mode-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-        <path d="M8 2c3 1.6 5 4.4 5 6.4H3C3 6.4 5 3.6 8 2Z" strokeLinejoin="round" />
-        <path d="M8 8.4V14" strokeLinecap="round" />
-        <path d="M5 14h6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-  return (
-    <svg className="mode-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-      <circle cx="6" cy="8" r="4.3" />
-      <circle cx="10" cy="8" r="4.3" />
-    </svg>
-  );
-}
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
@@ -314,7 +290,7 @@ export default function ChicagoMap({ places }) {
               className={`mode-btn ${mode === m.key ? "active" : ""}`}
               onClick={() => setMode(m.key)}
             >
-              <ModeIcon mode={m.key} />
+              <CatIcon kind={m.key} className="mode-icon" />
               {m.label}
             </button>
           ))}
@@ -381,7 +357,7 @@ export default function ChicagoMap({ places }) {
               <div className="patio-block">
                 <div className="patio-head">
                   <span className="patio-icon">
-                    <ModeIcon mode="patios" />
+                    <CatIcon kind="patios" className="mode-icon" />
                   </span>
                   {selectedPlace.patio.patio_type || "Patio"} · {seasonLabel(selectedPlace.patio)}
                 </div>
