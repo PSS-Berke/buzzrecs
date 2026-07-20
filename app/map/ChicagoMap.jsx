@@ -242,12 +242,6 @@ export default function ChicagoMap({ places }) {
             </button>
           </div>
         </div>
-        <p className="map-caption">
-          Drag to pan, scroll or pinch to zoom — or tap a neighborhood above to jump right in.
-        </p>
-      </div>
-
-      <aside className="map-legend">
         {selectedPlace && (
           <div className="map-callout">
             <div className="card-top">
@@ -291,13 +285,22 @@ export default function ChicagoMap({ places }) {
           </div>
         )}
 
-        {hoods.map((hood) => (
-          <div className="map-hood" key={hood}>
-            <h4>{hood}</h4>
-            <ul>
-              {withLive
-                .filter((p) => p.neighborhood === hood)
-                .map((p) => (
+        <p className="map-caption">
+          Drag to pan, scroll or pinch to zoom — or tap a neighborhood above to jump right in.
+        </p>
+      </div>
+
+      <aside className="map-legend">
+        {hoods.map((hood) => {
+          const spots = withLive.filter((p) => p.neighborhood === hood);
+          return (
+            <details className="map-hood" key={hood} open>
+              <summary>
+                <h4>{hood}</h4>
+                <span className="map-hood-count">{spots.length}</span>
+              </summary>
+              <ul>
+                {spots.map((p) => (
                   <li key={p.id}>
                     <button
                       className={`map-list-item ${p.id === selected ? "active" : ""}`}
@@ -309,9 +312,10 @@ export default function ChicagoMap({ places }) {
                     </button>
                   </li>
                 ))}
-            </ul>
-          </div>
-        ))}
+              </ul>
+            </details>
+          );
+        })}
       </aside>
     </div>
   );

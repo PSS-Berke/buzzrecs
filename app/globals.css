@@ -894,9 +894,25 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   border-radius: 22px;
   box-shadow: 8px 8px 0 rgba(63, 90, 73, 0.45);
   padding: 14px 14px 6px;
+  /* Defensive containment: if the Leaflet map ever briefly mis-sizes
+     (e.g. mid-layout on load), keep it from bleeding onto the rest of
+     the page instead of just trusting the inner .map-viewport's clip. */
+  overflow: hidden;
 }
 
-.map-toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px 12px; }
+.map-toolbar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 8px;
+  padding: 0 2px 12px;
+  /* Fade hint at the right edge so a scrollable row doesn't look like a
+     hard cut-off -- most useful on phones where it never fits in one line. */
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+}
+.map-toolbar .pill { flex: 0 0 auto; }
 
 .map-viewport-wrap {
   position: relative;
@@ -987,28 +1003,65 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 .map-pin-icon.selected .map-pin-body { fill: var(--maroon); }
 .map-pin-icon:hover .map-pin-body { fill: var(--maroon); }
 
-.map-legend { display: flex; flex-direction: column; gap: 22px; }
+/* Selected-place callout now lives directly under the map itself (inside
+   .map-canvas) instead of the sidebar -- tapping a pin gives immediate
+   feedback right where you tapped, without scrolling to a separate column. */
 .map-callout {
   background: var(--paper);
   border: 2px solid var(--maroon);
   border-radius: 18px 22px 14px 20px;
   padding: 20px 22px;
+  margin: 16px 2px 4px;
   box-shadow: 4px 4px 0 rgba(63, 90, 73, 0.35);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.map-hood h4 {
+.map-legend { display: flex; flex-direction: column; gap: 6px; }
+
+/* Neighborhood groups are <details>/<summary> -- collapsible so a 100+
+   spot list can be scanned as compact headers instead of one long scroll,
+   while still defaulting open (no behavior change unless you use it). */
+.map-hood { border-bottom: 1px solid var(--brass); padding: 4px 0 10px; }
+.map-hood:last-child { border-bottom: none; }
+.map-hood summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 2px;
+}
+.map-hood summary::-webkit-details-marker { display: none; }
+.map-hood summary h4 {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 400;
   font-size: 1.15rem;
   color: var(--maroon);
-  border-bottom: 1px solid var(--brass);
-  padding-bottom: 6px;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
-.map-hood ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.map-hood summary h4::before {
+  content: "▸";
+  color: var(--brass);
+  font-size: 0.8em;
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.map-hood[open] summary h4::before { transform: rotate(90deg); }
+.map-hood-count {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--club-light);
+  border-radius: 999px;
+  padding: 2px 9px;
+  flex-shrink: 0;
+}
+.map-hood ul { list-style: none; display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
 .map-list-item {
   width: 100%;
   text-align: left;
@@ -1045,21 +1098,34 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 .map-list-item.active .dot-live { background: var(--brass-light); }
 
 @media (max-width: 860px) {
-  .map-layout { grid-template-columns: 1fr; }
+  .map-layout { grid-template-columns: 1fr; gap: 20px; }
 }
 
-/* ---- Phone-sized screens: shorter map, bigger touch targets ---- */
+/* ---- Phone-sized screens: reclaim edge width, shorten the map, bigger
+   touch targets, tighter everything so it reads as designed-for-mobile
+   rather than a shrunk desktop layout. ---- */
 @media (max-width: 640px) {
-  .map-viewport { height: 58vh; }
-  .map-zoom-controls button { width: 44px; height: 44px; font-size: 1.4rem; }
-  .map-toolbar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 10px;
+  .map-hero { padding: 28px 0 4px; }
+  .map-hero .dek { font-size: 0.96rem; }
+
+  .map-layout { padding: 20px 0 34px; }
+
+  .map-canvas {
+    border-width: 2px;
+    outline-offset: 3px;
+    border-radius: 16px;
+    box-shadow: 5px 5px 0 rgba(63, 90, 73, 0.45);
+    padding: 10px 10px 4px;
   }
-  .map-toolbar .pill { flex: 0 0 auto; }
+
+  .map-viewport { height: 52vh; aspect-ratio: auto; border-radius: 10px; }
+  .map-zoom-controls { right: 8px; bottom: 8px; }
+  .map-zoom-controls button { width: 44px; height: 44px; font-size: 1.4rem; }
+
+  .map-callout { padding: 16px 16px; margin: 12px 0 2px; }
+
   .map-list-item { padding: 11px 10px; font-size: 0.96rem; }
+  .map-hood summary h4 { font-size: 1.05rem; }
 }
 
 /* Reservation briefing (card back) */
