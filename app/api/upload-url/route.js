@@ -33,8 +33,19 @@ function r2Config() {
 
 export async function POST(req) {
   const cfg = r2Config();
-  if (!cfg)
-    return NextResponse.json({ error: "R2 not configured" }, { status: 501 });
+  if (!cfg) {
+    const missing = [
+      "R2_ACCOUNT_ID",
+      "R2_ACCESS_KEY_ID",
+      "R2_SECRET_ACCESS_KEY",
+      "R2_BUCKET",
+      "R2_PUBLIC_BASE_URL",
+    ].filter((k) => !process.env[k]);
+    return NextResponse.json(
+      { error: "R2 not configured", missing },
+      { status: 501 }
+    );
+  }
 
   const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
