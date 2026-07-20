@@ -32,8 +32,8 @@ export default async function PublicProfile({ params }) {
       .filter(Boolean)
       .join(" · "),
     byline: null,
-    mediaType: r.menu_photo_url ? "image" : null,
-    mediaUrl: r.menu_photo_url || null,
+    mediaType: r.video_url ? "video" : r.menu_photo_url ? "image" : null,
+    mediaUrl: r.video_url || r.menu_photo_url || null,
     rating: Number(r.rating),
     ratingOutOf: 5,
     vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,

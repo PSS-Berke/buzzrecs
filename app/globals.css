@@ -1444,3 +1444,18 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   cursor: pointer;
 }
 .comment-send:disabled { opacity: 0.5; cursor: default; }
+
+/* ---- Post-as toggle (admin wizard) ---- */
+.postas-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.postas-pill {
+  font-family: var(--font-script), cursive;
+  font-size: 1rem;
+  color: var(--maroon);
+  background: transparent;
+  border: 2px solid var(--maroon);
+  border-radius: var(--wobble-2);
+  padding: 4px 16px 6px;
+  cursor: pointer;
+}
+.postas-pill:hover { transform: rotate(-1.5deg) scale(1.04); }
+.postas-pill.on { background: var(--maroon); color: var(--paper); border-color: var(--brass); }

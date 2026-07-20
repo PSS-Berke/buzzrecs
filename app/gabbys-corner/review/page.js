@@ -11,6 +11,7 @@ const MAX_CLIP_SECONDS = 90;
 export default function ReviewWizard() {
   const [session, setSession] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [postAs, setPostAs] = useState("me"); // admins pick: "me" | "gabby"
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [codeSent, setCodeSent] = useState(false);
@@ -48,8 +49,9 @@ export default function ReviewWizard() {
   const [body, setBody] = useState("");
   const [displayName, setDisplayName] = useState("");
 
-  const max = isAdmin ? 10 : 5;
-  const min = isAdmin ? 0 : 1;
+  const asGabby = isAdmin && postAs === "gabby";
+  const max = asGabby ? 10 : 5;
+  const min = asGabby ? 0 : 1;
 
   useEffect(() => {
     if (!supabase) return;
@@ -132,7 +134,7 @@ export default function ReviewWizard() {
 
   useEffect(() => {
     setScore((s) => (s == null ? null : Math.min(Math.max(s, min), max)));
-  }, [isAdmin, min, max]);
+  }, [asGabby, min, max]);
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -206,7 +208,7 @@ export default function ReviewWizard() {
 
   function next() {
     setErr("");
-    if (step === 0 && isAdmin && !video)
+    if (step === 0 && asGabby && !video)
       return setErr("Pick the video first — that's the review.");
     if (step === 0 && video && clipLen > MAX_CLIP_SECONDS)
       return setErr(
@@ -296,7 +298,7 @@ export default function ReviewWizard() {
         throw new Error(
           "Upload service hiccuped and this clip is too big for the backup route — trim it a bit shorter and try again."
         );
-      return uploadTo("gabby-videos", file);
+      return uploadTo(asGabby ? "gabby-videos" : "review-media", file);
     }
   }
 
@@ -325,7 +327,7 @@ export default function ReviewWizard() {
     try {
       let videoUrl = null;
       let menuUrl = null;
-      if (isAdmin && video) {
+      if (video) {
         let toUpload = video;
         if (needsTrim && canTrim()) {
           try {
@@ -376,7 +378,7 @@ export default function ReviewWizard() {
       };
 
       let insErr;
-      if (isAdmin) {
+      if (asGabby) {
         ({ error: insErr } = await supabase
           .from("gabbys_reviews")
           .insert({ ...common, video_url: videoUrl }));
@@ -385,6 +387,7 @@ export default function ReviewWizard() {
         ({ error: insErr } = await supabase.from("user_reviews").insert({
           ...rest,
           body: notes,
+          video_url: videoUrl,
           user_id: session.user.id,
         }));
       }
@@ -454,10 +457,10 @@ export default function ReviewWizard() {
 
       <main className="container upload-wrap">
         <span className="script-sub">
-          {isAdmin ? "bartender's entrance" : "from the bar stools"}
+          {asGabby ? "bartender's entrance" : "from the bar stools"}
         </span>
         <h1 className="upload-title">
-          {done ? "Poured." : isAdmin ? "Pour one in" : "Add your pour"}
+          {done ? "Poured." : asGabby ? "Pour one in" : "Add your pour"}
         </h1>
 
         {!supabase && <p className="empty">Database not configured.</p>}
@@ -559,6 +562,25 @@ export default function ReviewWizard() {
             {step === 0 && (
               <>
                 {isAdmin && (
+                  <div className="postas-row">
+                    <span className="script-sub">posting</span>
+                    <button
+                      type="button"
+                      className={`postas-pill${!asGabby ? " on" : ""}`}
+                      onClick={() => setPostAs("me")}
+                    >
+                      as me
+                    </button>
+                    <button
+                      type="button"
+                      className={`postas-pill${asGabby ? " on" : ""}`}
+                      onClick={() => setPostAs("gabby")}
+                    >
+                      as Gabby&apos;s Corner
+                    </button>
+                  </div>
+                )}
+                {(
                   <>
                     <input
                       ref={videoInputRef}
@@ -581,7 +603,9 @@ export default function ReviewWizard() {
                           className="script-sub"
                           style={{ display: "block", marginTop: 4 }}
                         >
-                          the review itself — required
+                          {asGabby
+                            ? "the review itself — required"
+                            : "show us the pour — optional"}
                         </span>
                       </button>
                     )}
@@ -708,7 +732,7 @@ export default function ReviewWizard() {
                       className="script-sub"
                       style={{ display: "block", marginTop: 4 }}
                     >
-                      {isAdmin ? "optional" : "optional but loved"}
+                      {asGabby ? "optional" : "optional but loved"}
                     </span>
                   </button>
                 )}
@@ -824,7 +848,7 @@ export default function ReviewWizard() {
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                 />
-                {!isAdmin && (
+                {!asGabby && (
                   <>
                     <label>Name on the review (optional)</label>
                     <input
