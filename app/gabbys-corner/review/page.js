@@ -149,6 +149,28 @@ export default function ReviewWizard() {
     (p) => p.name.toLowerCase() === query.trim().toLowerCase()
   );
 
+  const videoInputRef = useRef(null);
+  const picInputRef = useRef(null);
+
+  const tileStyle = {
+    border: "2px dashed var(--brass)",
+    borderRadius: 14,
+    background: "var(--paper)",
+    padding: "1.4rem 1rem",
+    width: "100%",
+    textAlign: "center",
+    cursor: "pointer",
+    color: "var(--maroon-deep)",
+    fontFamily: "inherit",
+    fontSize: "1rem",
+  };
+  const mediaActionsStyle = {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    fontSize: ".9rem",
+  };
+
   const normPhone = (p) => {
     const d = p.replace(/\D/g, "");
     if (d.length === 10) return `+1${d}`;
@@ -474,12 +496,31 @@ export default function ReviewWizard() {
               <>
                 {isAdmin && (
                   <>
-                    <label>The video (required)</label>
                     <input
+                      ref={videoInputRef}
                       type="file"
                       accept="video/*"
+                      style={{ display: "none" }}
                       onChange={(e) => setVideo(e.target.files?.[0] || null)}
                     />
+                    {!video && (
+                      <button
+                        type="button"
+                        style={tileStyle}
+                        onClick={() => videoInputRef.current?.click()}
+                      >
+                        <span style={{ fontSize: "1.6rem", display: "block" }}>
+                          🎬
+                        </span>
+                        <strong>Add the video</strong>
+                        <span
+                          className="script-sub"
+                          style={{ display: "block", marginTop: 4 }}
+                        >
+                          the review itself — required
+                        </span>
+                      </button>
+                    )}
                     {video && videoURL && (
                       <div className="stack" style={{ gap: 8 }}>
                         <video
@@ -554,29 +595,82 @@ export default function ReviewWizard() {
                             )}
                           </>
                         )}
+                        <div style={mediaActionsStyle}>
+                          <button
+                            type="button"
+                            className="back-link"
+                            onClick={() => videoInputRef.current?.click()}
+                          >
+                            swap video
+                          </button>
+                          <button
+                            type="button"
+                            className="back-link"
+                            onClick={() => setVideo(null)}
+                          >
+                            remove
+                          </button>
+                        </div>
                       </div>
                     )}
                   </>
                 )}
-                <label>
-                  Menu pic {isAdmin ? "(optional)" : "(optional but loved)"}
-                </label>
+
                 <input
+                  ref={picInputRef}
                   type="file"
                   accept="image/*"
+                  style={{ display: "none" }}
                   onChange={(e) => setMenuPic(e.target.files?.[0] || null)}
                 />
-                {menuPicPreview && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={menuPicPreview}
-                    alt="Menu preview"
-                    style={{
-                      maxWidth: 180,
-                      borderRadius: 10,
-                      border: "2px solid var(--maroon-deep)",
-                    }}
-                  />
+                {!menuPic && (
+                  <button
+                    type="button"
+                    style={tileStyle}
+                    onClick={() => picInputRef.current?.click()}
+                  >
+                    <span style={{ fontSize: "1.6rem", display: "block" }}>
+                      📷
+                    </span>
+                    <strong>Add a menu pic</strong>
+                    <span
+                      className="script-sub"
+                      style={{ display: "block", marginTop: 4 }}
+                    >
+                      {isAdmin ? "optional" : "optional but loved"}
+                    </span>
+                  </button>
+                )}
+                {menuPic && menuPicPreview && (
+                  <div className="stack" style={{ gap: 8 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={menuPicPreview}
+                      alt="Menu preview"
+                      style={{
+                        maxWidth: 220,
+                        borderRadius: 10,
+                        border: "2px solid var(--maroon-deep)",
+                        boxShadow: "4px 4px 0 var(--brass)",
+                      }}
+                    />
+                    <div style={mediaActionsStyle}>
+                      <button
+                        type="button"
+                        className="back-link"
+                        onClick={() => picInputRef.current?.click()}
+                      >
+                        swap pic
+                      </button>
+                      <button
+                        type="button"
+                        className="back-link"
+                        onClick={() => setMenuPic(null)}
+                      >
+                        remove
+                      </button>
+                    </div>
+                  </div>
                 )}
               </>
             )}
