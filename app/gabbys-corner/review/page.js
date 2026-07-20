@@ -328,14 +328,27 @@ export default function ReviewWizard() {
       if (isAdmin && video) {
         let toUpload = video;
         if (needsTrim && canTrim()) {
-          setBusyMsg("Trimming the clip…");
-          const { blob, ext, mimeType } = await trimVideo(
-            video,
-            trimStart,
-            trimEnd,
-            (p) => setBusyMsg(`Trimming the clip… ${Math.round(p * 100)}%`)
-          );
-          toUpload = new File([blob], `clip.${ext}`, { type: mimeType });
+          try {
+            setBusyMsg("Trimming the clip…");
+            const { blob, ext, mimeType } = await trimVideo(
+              video,
+              trimStart,
+              trimEnd,
+              (p) => setBusyMsg(`Trimming the clip… ${Math.round(p * 100)}%`)
+            );
+            toUpload = new File([blob], `clip.${ext}`, { type: mimeType });
+          } catch (trimErr) {
+            // Trim hiccuped — post the original rather than fail, if it fits.
+            if (video.size <= 48 * 1024 * 1024) {
+              toUpload = video;
+            } else {
+              throw new Error(
+                `Couldn't process the clip on this device (${
+                  trimErr.message || "trim failed"
+                }) and the original is too big to send raw — try a shorter/smaller video.`
+              );
+            }
+          }
         }
         setBusyMsg("Uploading the video…");
         videoUrl = await uploadVideo(toUpload);
