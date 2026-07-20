@@ -50,7 +50,7 @@ export default function ReviewWizard() {
   const [displayName, setDisplayName] = useState("");
 
   const asGabby = isAdmin && postAs === "gabby";
-  const max = asGabby ? 10 : 5;
+  const max = 10; // one scale for the whole corner
   const min = asGabby ? 0 : 1;
 
   useEffect(() => {

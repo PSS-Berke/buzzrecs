@@ -334,7 +334,9 @@ it gets uploaded manually.
 - **Phone OTP live**: Supabase Auth phone provider = Twilio Verify. Verify Service "BuzzRecs" SID `VAda14361ed3ddcd28f63f995b6cc6761a`, Account SID `ACcd8446d21cde0925eb4147f54f44ec76`. Auth Token entered by Berke in dashboard only — never in repo/docs. Account is upgraded; any US number receives codes (~$0.05/verification).
 - **New tables** (auth chat owns): `profiles` (id→auth.users, display_name, is_admin, auto-created via on_auth_user_created trigger) and `user_reviews` (community pours: whiskey_name, place_id→places nullable, bar_text, rating numeric 1–5, body, photo_url, status live/hidden/pending, FK user_id→profiles for PostgREST embeds). RLS: public reads live rows; users write own; RESTRICTIVE policy caps 5 reviews/user/24h. Verified: anon read 200, anon write 401.
 - **New code**: `/gabbys-corner/review` (community OTP login + 1–5 review form), community feed section on `/gabbys-corner`, `getUserReviews()` in lib/supabase.js. Gabby's 0–10 video flow untouched.
-- Community scale is 1–5 on purpose (Gabby's 0–10 stays distinct).
+- Scale unified 2026-07-19 per Berke: EVERYTHING is /10 now. Community =
+  1–10 (user_reviews columns numeric(3,1), checks 1–10), Gabby = 0–10.
+  Historic 1–5 community rows were doubled in place.
 
 ### Wizard post — 2026-07-18 (auth chat)
 

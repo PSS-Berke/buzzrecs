@@ -237,7 +237,7 @@ export default function ProfilePage() {
                       <span className="pour-meta">
                         {" "}
                         · {r.places?.name || r.bar_text || "somewhere"} ·{" "}
-                        {Number(r.rating)}/5
+                        {Number(r.rating)}/10
                         {r.status !== "live" && ` · ${r.status}`}
                       </span>
                     </div>

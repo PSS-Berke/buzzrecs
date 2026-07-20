@@ -35,7 +35,7 @@ export default async function PublicProfile({ params }) {
     mediaType: r.video_url ? "video" : r.menu_photo_url ? "image" : null,
     mediaUrl: r.video_url || r.menu_photo_url || null,
     rating: Number(r.rating),
-    ratingOutOf: 5,
+    ratingOutOf: 10,
     vibe: r.rating_vibe != null ? Number(r.rating_vibe) : null,
     menu: r.rating_menu != null ? Number(r.rating_menu) : null,
     notes: r.body,
@@ -103,7 +103,7 @@ export default async function PublicProfile({ params }) {
               </span>
               {avg && (
                 <span>
-                  <strong>{avg}</strong>/5 average
+                  <strong>{avg}</strong>/10 average
                 </span>
               )}
               {haunt && (
