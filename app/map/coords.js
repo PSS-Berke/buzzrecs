@@ -98,6 +98,23 @@ export const PIN_COORDS = {
   "parlor-pizza-bar-west-loop": { lat: 41.8834763, lng: -87.6488895 },
   "federales-fulton-market": { lat: 41.8853250, lng: -87.6522418 },
   "costera-cocina-tulum": { lat: 41.8869666, lng: -87.6492845 },
+  // River North batch (geocoded 2026-07-20 via Nominatim)
+  "bub-city": { lat: 41.8897924, lng: -87.6307013 },
+  "rpm-steak": { lat: 41.8893747, lng: -87.6305913 },
+  "rpm-seafood": { lat: 41.8879357, lng: -87.6306345 },
+  "siena-tavern": { lat: 41.8890792, lng: -87.6298263 },
+  "untitled-supper-club": { lat: 41.8890762, lng: -87.6316810 },
+  "the-kerryman": { lat: 41.8941753, lng: -87.6309917 },
+  "tanta-river-north": { lat: 41.8918080, lng: -87.6320105 },
+  "kinzie-chophouse": { lat: 41.8894458, lng: -87.6342726 },
+  "wildfire-river-north": { lat: 41.8938121, lng: -87.6335041 },
+  "osteria-via-stato": { lat: 41.8931024, lng: -87.6283685 },
+  "quartino-ristorante": { lat: 41.8934348, lng: -87.6283059 },
+  "barrio-river-north": { lat: 41.8890874, lng: -87.6304313 },
+  "river-roast": { lat: 41.8886220, lng: -87.6323010 },
+  "hubbard-inn": { lat: 41.8903249, lng: -87.6315832 },
+  "the-hampton-social-river-north": { lat: 41.8897850, lng: -87.6376935 },
+  "sunda-new-asian-river-north": { lat: 41.8909642, lng: -87.6316624 },
 };
 
 // Neighborhood centroids, for the quick-jump chips' flyTo target.
