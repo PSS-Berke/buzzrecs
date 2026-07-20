@@ -25,9 +25,6 @@ export default async function MapPage() {
           </Link>
           <nav className="topnav">
             <CityChip />
-            <Link href="/gabbys-corner" className="gabby-link">
-              Gabby&apos;s Corner
-            </Link>
             <AuthChip />
           </nav>
         </div>
