@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getGabbysReviews, getUserReviews } from "../../lib/supabase";
 import WhiskeyGlass from "../whiskey-glass";
 import ReviewCarousel from "../review-carousel";
+import AuthChip from "../auth-chip";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function GabbysCorner() {
             <Link href="/map" className="map-link">
               The Map
             </Link>
+            <AuthChip />
           </nav>
         </div>
       </div>

@@ -260,6 +260,24 @@ it gets uploaded manually.
 - [ ] More cities
 - [ ] Vercel team transfer to Parallel Strategies when Berke's role allows
 
+## Site-wide auth — 2026-07-19 (social chat)
+
+- **`app/auth-context.jsx`**: `AuthProvider` (wraps app in layout.js) + `useAuth()`
+  — session, profile (id/display_name/handle/avatar_url/bio/is_admin),
+  openLogin/signOut. Includes the `LoginSheet` modal: phone OTP → first-login
+  onboarding (pick @handle + display name). Handle rules: `^[a-z0-9_]{3,20}$`,
+  unique (case-insensitive).
+- **`app/auth-chip.jsx`**: `<AuthChip/>` in every topnav (/, /map,
+  /gabbys-corner) — "sign in" button or avatar/@handle chip w/ sign-out menu.
+- **Schema**: `profiles` + `handle` (unique, checked), `avatar_url`, `bio` —
+  SQL in `supabase/2026-07-19-profiles-identity.sql` (run via dashboard).
+- CSS: `.auth-chip/.auth-wrap/.auth-menu/.sheet-overlay/.sheet-card` at the
+  bottom of globals.css.
+- Wizard untouched — it shares the same supabase session, so signed-in users
+  skip its login step automatically.
+- Next up (per buzzrecs-social-plan.md): /profile + /u/[handle] (Phase 2),
+  unified feed + cheers/comments (Phase 3).
+
 ## Changelog
 
 - **2026-07-18 (later)** — Auth chat: Twilio Verify + Supabase phone auth

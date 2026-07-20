@@ -1102,3 +1102,93 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
   font-size: 0.8rem;
   opacity: 0.85;
 }
+
+/* ---- Site-wide auth (chip + login sheet) ---- */
+.auth-wrap { position: relative; display: inline-flex; }
+.auth-chip {
+  font-family: var(--font-script), cursive;
+  font-size: 1rem;
+  color: var(--paper);
+  background: var(--maroon);
+  border: 2px solid var(--brass);
+  border-radius: var(--wobble-2);
+  padding: 5px 15px 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+.auth-chip:hover { background: var(--club); transform: rotate(-1.5deg) scale(1.04); }
+.auth-chip.signed-in { background: var(--club); }
+.auth-chip.signed-in:hover { background: var(--maroon); }
+.auth-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--brass-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-initial {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: var(--brass);
+  color: var(--paper);
+}
+.auth-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--paper);
+  border: 2px solid var(--maroon-deep);
+  border-radius: var(--wobble-2);
+  box-shadow: 4px 4px 0 var(--brass);
+  padding: 6px;
+  z-index: 60;
+  min-width: 130px;
+}
+.auth-menu-item {
+  font-family: var(--font-script), cursive;
+  font-size: 1rem;
+  color: var(--maroon);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.auth-menu-item:hover { background: var(--cream); color: var(--club); }
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(46, 26, 20, 0.55);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.sheet-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 6px 6px 0 var(--brass);
+}
+.sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--maroon-deep);
+  cursor: pointer;
+  line-height: 1;
+}
+.sheet-close:hover { color: var(--maroon); transform: scale(1.15); }

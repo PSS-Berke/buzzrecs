@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Shrikhand, Kaushan_Script, Karla } from "next/font/google";
+import { AuthProvider } from "./auth-context";
 
 const shrikhand = Shrikhand({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${shrikhand.variable} ${kaushan.variable} ${karla.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

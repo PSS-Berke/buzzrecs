@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPlacesWithHappyHours } from "../../lib/supabase";
 import ChicagoMap from "./ChicagoMap";
+import AuthChip from "../auth-chip";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,7 @@ export default async function MapPage() {
             <Link href="/gabbys-corner" className="gabby-link">
               Gabby&apos;s Corner
             </Link>
+            <AuthChip />
           </nav>
         </div>
       </div>

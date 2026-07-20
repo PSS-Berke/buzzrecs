@@ -3,6 +3,7 @@ import { getPlacesWithHappyHours } from "../lib/supabase";
 import Directory from "./directory";
 import Carousel from "./carousel";
 import Splash from "./splash";
+import AuthChip from "./auth-chip";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export default async function Home() {
             <Link href="/map" className="map-link">
               The Map
             </Link>
+            <AuthChip />
           </nav>
         </div>
       </div>
