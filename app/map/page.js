@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getPlacesWithHappyHours } from "../../lib/supabase";
 import ChicagoMap from "./ChicagoMap";
 import AuthChip from "../auth-chip";
+import CityChip from "../city-chip";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function MapPage() {
             <img src="/logo-wordmark.png" alt="Buzz's Recs" className="wm-chip" />
           </Link>
           <nav className="topnav">
-            <span className="city">Chicago</span>
+            <CityChip />
             <Link href="/gabbys-corner" className="gabby-link">
               Gabby&apos;s Corner
             </Link>
@@ -57,7 +58,9 @@ export default async function MapPage() {
 
         <footer className="site">
           <span>Hours and deals change — always confirm with the venue.</span>
-          <span className="fm">Chicago is just the beginning…</span>
+          <Link href="/beginning" className="fm">
+            Chicago is just the beginning…
+          </Link>
         </footer>
       </main>
     </>

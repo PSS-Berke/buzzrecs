@@ -4,6 +4,7 @@ import Directory from "./directory";
 import Carousel from "./carousel";
 import Splash from "./splash";
 import AuthChip from "./auth-chip";
+import CityChip from "./city-chip";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export default async function Home() {
             />
           </div>
           <nav className="topnav">
-            <span className="city">Chicago</span>
+            <CityChip />
             <Link href="/map" className="map-link">
               The Map
             </Link>
