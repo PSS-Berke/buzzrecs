@@ -78,17 +78,13 @@ export default async function GabbysCorner() {
               to order — and where to order it.
             </p>
             <div className="gabby-actions">
-              <Link href="/" className="back-link">
-                ← back to the happy hours
+              <Link href="/gabbys-corner/review" className="gabby-link">
+                add your pour
               </Link>
             </div>
           </div>
           <WhiskeyGlass />
         </section>
-
-        {gabbyItems.length > 0 && (
-          <ReviewCarousel items={gabbyItems} tone="maroon" />
-        )}
 
         <section className="gabby-hero" style={{ marginTop: "3rem" }}>
           <div className="txt">
@@ -98,11 +94,6 @@ export default async function GabbysCorner() {
               Verified drinkers, real orders. Log in with your phone and add
               yours — no passwords, just a text.
             </p>
-            <div className="gabby-actions">
-              <Link href="/gabbys-corner/review" className="gabby-link">
-                add your pour
-              </Link>
-            </div>
           </div>
         </section>
 
@@ -116,6 +107,16 @@ export default async function GabbysCorner() {
         {communityItems.length > 0 && (
           <ReviewCarousel items={communityItems} tone="club" />
         )}
+
+        {gabbyItems.length > 0 && (
+          <ReviewCarousel items={gabbyItems} tone="maroon" />
+        )}
+
+        <p style={{ marginTop: "2rem" }}>
+          <Link href="/" className="back-link">
+            ← back to the happy hours
+          </Link>
+        </p>
 
         <footer className="site">
           <span>Drink responsibly. Rate ruthlessly.</span>
