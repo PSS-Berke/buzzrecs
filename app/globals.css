@@ -1774,3 +1774,33 @@ a.fm:hover { color: var(--maroon); transform: rotate(-1.5deg); }
 .menu-btn.open { filter: drop-shadow(0 0 0.5px var(--brass)); }
 .menu-mark { height: 50px; width: auto; display: block; overflow: visible; }
 .menu-btn.open .menu-mark { transform: rotate(-2deg); }
+
+/* ===== Date Night directory ===== */
+.dn-card { min-height: auto; }
+.dn-card .card-face-front { position: relative; }
+.dn-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.1rem 0 0.55rem; }
+.dn-badge {
+  font-family: var(--font-body); font-weight: 700; font-size: 0.72rem;
+  letter-spacing: 0.02em; padding: 0.16rem 0.55rem; border-radius: 999px;
+  border: 1.5px solid var(--brass); color: var(--maroon-deep);
+  background: color-mix(in srgb, var(--brass-light) 22%, transparent);
+  white-space: nowrap;
+}
+.dn-badge.dn-michelin {
+  color: var(--cream); background: var(--maroon); border-color: var(--maroon-deep);
+}
+.dn-badge.dn-bib {
+  color: var(--cream); background: var(--club); border-color: var(--club);
+}
+.dn-badge.dn-fifty { color: var(--maroon-deep); border-color: var(--brass); }
+.dn-badge.dn-nyt {
+  color: var(--maroon-deep); background: transparent; border-style: dashed;
+}
+.dn-meta {
+  font-family: var(--font-body); font-size: 0.82rem; color: var(--brass);
+  font-weight: 600; margin: 0.3rem 0 0.1rem;
+}
+.dn-res-note {
+  font-family: var(--font-body); font-size: 0.85rem; color: var(--brass);
+  font-style: italic;
+}

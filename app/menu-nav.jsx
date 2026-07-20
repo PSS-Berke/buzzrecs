@@ -8,7 +8,7 @@ import { useAuth } from "./auth-context";
 const REC_LISTS = [
   { href: "/", label: "Happy Hours", note: null },
   { href: "/patios", label: "Patios", note: null },
-  { href: "/date-nights", label: "Date Nights", note: "soon" },
+  { href: "/date-nights", label: "Date Nights", note: null },
 ];
 
 // Little tavern menu-card mark. Inline SVG so it can use the page's script
