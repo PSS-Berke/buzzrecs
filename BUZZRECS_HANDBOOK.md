@@ -314,4 +314,21 @@ it gets uploaded manually.
 ### Clip stage + upload fallback — 2026-07-19 (auth chat)
 
 - Wizard media step now has an Instagram-style clip stage (lib/trimVideo.js): preview + start/end sliders, 90s cap, canvas+MediaRecorder re-encode at ~3.5Mbps/720-1280 → clips land ≈40-45MB. No wasm.
-- uploadVideo tries R2 presigned PUT first, falls back to Supabase gabby-videos on ANY failure (fits post-trim). KNOWN ISSUE: browser PUT to R2 S3 endpoint fails CORS-style in Chrome+Safari even though preflight replays clean server-side (checksums disabled + path-style already applied). /api/cors-probe is a temp diagnostic endpoint — remove when solved.
+- uploadVideo tries R2 presigned PUT first, falls back to Supabase gabby-videos on ANY failure (fits post-trim).
+- **ROOT CAUSE FOUND (2026-07-19, social chat): it was never CORS.** curl PUT
+  against a fresh presigned URL returns 403 `SignatureDoesNotMatch` — the
+  R2 credentials in Vercel env are wrong. Browsers masked this: R2's 403
+  error response carries no CORS headers, so Chrome/Safari surface it as a
+  generic fetch failure while the OPTIONS preflight (handled by the CORS
+  layer) passes. Bucket CORS policy is fine (buzzrecs.vercel.app +
+  localhost:3000, GET/PUT, headers *). SDK config is fine (forcePathStyle
+  before signing, region auto, checksums off).
+- **Fix (Berke, in dashboards):** R2 → Manage API tokens → create a fresh
+  token (Object Read & Write, buzzrecs-videos) → copy the **S3 Access Key
+  ID and Secret Access Key** (the secret is the SHA-256 hash shown at
+  creation — NOT the raw "Token value" above it; that mixup is the likely
+  original bug, it survived the buzzrecs-uploader → buzzrecs-uploader-2
+  retry) → paste both into Vercel project env (`R2_ACCESS_KEY_ID`,
+  `R2_SECRET_ACCESS_KEY`, server-only) → redeploy. Verify: GET
+  /api/cors-probe, curl PUT the testUploadUrl → expect 200. Then delete
+  /api/cors-probe and the old R2 tokens.
