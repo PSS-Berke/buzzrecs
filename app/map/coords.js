@@ -83,6 +83,21 @@ export const PIN_COORDS = {
   "woodies-flat": { lat: 41.9102535, lng: -87.6339769 },
   "the-rabbit-hole": { lat: 41.9041785, lng: -87.6347448 },
   "kayao": { lat: 41.9054072, lng: -87.6348605 },
+  // West Loop batch (geocoded 2026-07-19 via Nominatim)
+  "bar-siena": { lat: 41.8847419, lng: -87.6487499 },
+  "the-loyalist": { lat: 41.8852803, lng: -87.6605832 },
+  "swift-and-sons": { lat: 41.8872849, lng: -87.6525788 },
+  "la-josie": { lat: 41.8846338, lng: -87.6472898 },
+  "formentos": { lat: 41.8841489, lng: -87.6512152 },
+  "city-winery-west-loop": { lat: 41.8845472, lng: -87.6571281 },
+  "bandit": { lat: 41.8840928, lng: -87.6490983 },
+  "bodega-taqueria-west-loop": { lat: 41.8846111, lng: -87.6504063 },
+  "ramen-san-fulton-market": { lat: 41.8863089, lng: -87.6485041 },
+  "grapes-and-grains": { lat: 41.8858961, lng: -87.6496078 },
+  "cabra": { lat: 41.8858848, lng: -87.6491365 },
+  "parlor-pizza-bar-west-loop": { lat: 41.8834763, lng: -87.6488895 },
+  "federales-fulton-market": { lat: 41.8853250, lng: -87.6522418 },
+  "costera-cocina-tulum": { lat: 41.8869666, lng: -87.6492845 },
 };
 
 // Neighborhood centroids, for the quick-jump chips' flyTo target.
