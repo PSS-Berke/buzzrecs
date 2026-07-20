@@ -60,14 +60,6 @@ export default async function Home() {
             Chicago is just the beginning…
           </Link>
         </footer>
-
-        <div className="bottom-gabby">
-          <Link href="/gabbys-corner">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-gabbys.png" alt="" />
-            <span>Gabby&apos;s Corner →</span>
-          </Link>
-        </div>
       </main>
     </>
   );
